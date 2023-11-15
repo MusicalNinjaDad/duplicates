@@ -16,7 +16,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Test with pytest
+      # - name: pytest, Doctest & Coverage
+      #   run: |
+      #     pip install pytest pytest-cov
+      #     pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+      - name: pytest
         run: |
-          pip install pytest pytest-cov
-          pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+          pip install -r test/requirements.txt
+          pytest
