@@ -1,3 +1,3 @@
-from .dupes import listfiles
+from .dupes import listfiles, finddupes
 
-__ALL__ = ['listfiles']
+__ALL__ = ['listfiles', 'finddupes']

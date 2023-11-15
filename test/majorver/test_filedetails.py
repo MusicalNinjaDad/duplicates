@@ -1,19 +1,6 @@
-from pytest import fixture
 from recurtools import flatten
 
-from . import listfiles, Path, dir1, dir2
-
-@fixture
-def testfiles(tmp_path):
-    dir1.copy(tmp_path)
-    dir2.copy(tmp_path)
-    return tmp_path
-
-@fixture
-def duplicatedir1(testfiles):
-    tmp_path = testfiles
-    dir1.copy(testfiles / 'alt')
-    return tmp_path    
+from . import listfiles, Path, testfiles, duplicatedir1
 
 def test_fileslisted(testfiles):
     filesdict = listfiles(testfiles)
