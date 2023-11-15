@@ -7,7 +7,7 @@ def listfiles(in_path: Path) -> dict:
             filepath = root / file
             size = filepath.stat().st_size
             if size in filedict:
-                filedict[size].append(filepath)
+                filedict[size].add(filepath)
             else:
-                filedict[size] = [filepath]
+                filedict[size] = {filepath}
     return filedict

@@ -25,15 +25,16 @@ def test_fileslisted(testfiles):
 def test_filesindexedbysize(testfiles):
     filesdict = listfiles(testfiles)
     assert filesdict == {
-        16: [Path(testfiles / 'dir1' / 'fileA.txt')],
-        23: [Path(testfiles / 'dir2' / 'fileB.txt')]
+        16: {Path(testfiles / 'dir1' / 'fileA.txt')},
+        23: {Path(testfiles / 'dir2' / 'fileB.txt')}
     }
 
 def test_filesofsamesize(duplicatedir1):
     testfiles = duplicatedir1
     filesdict = listfiles(testfiles)
     assert len(filesdict) == 2
-    assert Path(testfiles / 'dir1' / 'fileA.txt') in filesdict[16]
-    assert Path(testfiles / 'alt' / 'dir1' / 'fileA.txt') in filesdict[16]
-    assert len(filesdict[16]) == 2
-    assert filesdict[23] == [Path(testfiles / 'dir2' / 'fileB.txt')]
+    assert (filesdict[16]) == {
+        Path(testfiles / 'dir1' / 'fileA.txt'),
+        Path(testfiles / 'alt' / 'dir1' / 'fileA.txt')
+    }
+    assert filesdict[23] == {Path(testfiles / 'dir2' / 'fileB.txt')}
