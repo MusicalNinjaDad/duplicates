@@ -1,7 +1,7 @@
 from pytest import fixture
 from recurtools import flatten
 
-from . import Path, listfiles
+from . import listfiles, Path
 
 dir1 = Path('test/majorver/data/dir1')
 dir2 = Path('test/majorver/data/dir2')
