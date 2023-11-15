@@ -1,6 +1,7 @@
 from pytest import fixture
-from . import listfiles, Path
 from recurtools import flatten
+
+from . import Path, listfiles
 
 dir1 = Path('test/majorver/data/dir1')
 dir2 = Path('test/majorver/data/dir2')
@@ -17,3 +18,10 @@ def test_fileslisted(testfiles):
     assert len(files) == 2
     assert Path(testfiles / 'dir1' / 'fileA.txt') in files
     assert Path(testfiles / 'dir2' / 'fileB.txt') in files
+
+def test_filesindexedbysize(testfiles):
+    filesdict = listfiles(testfiles)
+    assert filesdict == {
+        16: [Path(testfiles / 'dir1' / 'fileA.txt')],
+        23: [Path(testfiles / 'dir2' / 'fileB.txt')]
+    }

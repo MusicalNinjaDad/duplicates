@@ -11,4 +11,8 @@ Path.copy = _copy
 
 def listfiles(in_path: Path) -> dict:
     allfiles = [root / file for root, dirs, files in in_path.walk() for file in files]
-    return {1: allfiles}
+    filedict = dict()
+    for file in allfiles:
+        size = file.stat().st_size
+        filedict[size] = [file]
+    return filedict
