@@ -10,12 +10,13 @@ def _copy(self: Path, target: Path) -> None:
 Path.copy = _copy
 
 def listfiles(in_path: Path) -> dict:
-    allfiles = [root / file for root, dirs, files in in_path.walk() for file in files]
     filedict = dict()
-    for file in allfiles:
-        size = file.stat().st_size
-        if size in filedict:
-            filedict[size].append(file)
-        else:
-            filedict[size] = [file]
+    for root, dirs, files in in_path.walk():
+        for file in files:
+            filepath = root / file
+            size = filepath.stat().st_size
+            if size in filedict:
+                filedict[size].append(filepath)
+            else:
+                filedict[size] = [filepath]
     return filedict
