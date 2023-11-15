@@ -14,5 +14,8 @@ def listfiles(in_path: Path) -> dict:
     filedict = dict()
     for file in allfiles:
         size = file.stat().st_size
-        filedict[size] = [file]
+        if size in filedict:
+            filedict[size].append(file)
+        else:
+            filedict[size] = [file]
     return filedict
