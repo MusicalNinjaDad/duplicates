@@ -25,5 +25,13 @@ class BufferedIOFile():
     """
 
     def __init__(self, path: Path, handle: BufferedIOBase):
-        self.path = path
-        self.handle = handle
+        self.__path = path
+        self.__handle = handle
+
+    @property
+    def path(self):
+        return self.__path
+    
+    @property
+    def handle(self):
+        return self.__handle
