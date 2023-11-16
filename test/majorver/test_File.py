@@ -39,3 +39,13 @@ def test_readbychunk(fileA):
     testfile = BufferedIOFile(fileA.path, fileA.handle, chunksize=4)
     contents = [chunk for chunk in testfile]
     assert contents == [b'some', b' ran', b'dom ', b'text']
+
+def test_notdivisiblebychunksize(fileB):
+    testfile = BufferedIOFile(fileB.path, fileB.handle, chunksize=16)
+    contents = [chunk for chunk in testfile]
+    assert contents == [b'some longer rand', b'om text']
+
+def test_defaultchunksize(fileA):
+    testfile = BufferedIOFile(fileA.path, fileA.handle)
+    contents = [chunk for chunk in testfile]
+    assert contents == [b'some random text']
