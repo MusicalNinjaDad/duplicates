@@ -48,4 +48,4 @@ def test_notdivisiblebychunksize(fileB):
 def test_defaultchunksize(fileA):
     testfile = BufferedIOFile(fileA.path, fileA.handle)
     contents = [chunk for chunk in testfile]
-    assert contents == [b'Some random text']
+    assert contents == [b'some random text']
