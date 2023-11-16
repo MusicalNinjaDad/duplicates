@@ -23,7 +23,7 @@ def filesofsamesize(filesbysize: dict[int, set]) -> set[frozenset]:
 class BufferedIOFile():
     """ A File that knows it's Path and is able to provide buffered read in chunks
     """
-    MB = 1024*2
+    MB = 1024**2
 
     def __init__(self, path: Path, handle: BufferedIOBase = None, chunksize=100*MB):
         self.__path = path
