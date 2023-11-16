@@ -1,3 +1,3 @@
-from .dupes import listfiles, finddupes
+from .dupes import listfiles, filesofsamesize
 
 __ALL__ = ['listfiles', 'finddupes']
