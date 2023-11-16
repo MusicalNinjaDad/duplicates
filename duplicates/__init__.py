@@ -1,3 +1,3 @@
-from .dupes import listfiles, filesofsamesize
+from .dupes import listfiles, filesofsamesize, BufferedIOFile
 
-__ALL__ = ['listfiles', 'finddupes']
+__ALL__ = ['listfiles', 'finddupes', 'File']

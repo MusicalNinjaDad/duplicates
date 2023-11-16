@@ -1,3 +1,4 @@
+from io import BufferedIOBase
 from pathlib import Path
 
 def listfiles(in_path: Path) -> dict[int, set]:
@@ -18,3 +19,11 @@ def filesofsamesize(filesbysize: dict[int, set]) -> set[frozenset]:
         for size, files in filesbysize.items() if len(files) > 1
     }
     return dupes
+
+class BufferedIOFile():
+    """ A File that knows it's Path and is able to provide buffered read in chunks
+    """
+
+    def __init__(self, path: Path, handle: BufferedIOBase):
+        self.path = path
+        self.handle = handle
