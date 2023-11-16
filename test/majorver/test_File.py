@@ -40,9 +40,9 @@ def test_uniquenessbasedonpath(fileA, fileB):
     testfileA = BufferedIOFile(fileA.path, fileA.handle)
     testfileB = BufferedIOFile(fileB.path, fileB.handle)
     testfileA2 = BufferedIOFile(fileA.path)
-    files = {testfileA, testfileB, testfileA2}
     assert testfileA == testfileA2
     assert testfileA == fileA.path
+    files = {testfileA, testfileB, testfileA2}
     assert len(files) == 2
     assert files == {testfileA, testfileB} == {testfileA2, testfileB}
 
@@ -65,7 +65,7 @@ def test_openhandleoninit(testfiles):
     fileApath = Path(testfiles / 'dir1' / 'fileA.txt')
     testfile = BufferedIOFile(fileApath)
     contents = [chunk for chunk in testfile]
-    assert contents == [b'some random text']
+    assert contents == [b'some random text'] # file is opened and read correctly
     thisprocess = psutil.Process()
     openfiles = thisprocess.open_files()
-    assert not any(Path(f.path) == Path(fileApath) for f in openfiles)
+    assert not any(Path(f.path) == Path(fileApath) for f in openfiles) #file is closed correctly
