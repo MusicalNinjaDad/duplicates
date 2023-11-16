@@ -58,3 +58,13 @@ class BufferedIOFile():
                 openedhandle.close()
         else:
             return self._FileIterator(self.handle, self.chunksize)
+        
+    def __hash__(self) -> int:
+        try:
+            return self.cachedhash
+        except AttributeError:
+            self.cachedhash = hash(self.path)
+            return self.cachedhash
+        
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, (Path, BufferedIOFile)) and hash(self) == hash(other)

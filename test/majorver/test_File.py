@@ -36,6 +36,16 @@ def test_hashable(fileA, fileB):
     files = {testfileA, testfileB}
     assert files
 
+def test_uniquenessbasedonpath(fileA, fileB):
+    testfileA = BufferedIOFile(fileA.path, fileA.handle)
+    testfileB = BufferedIOFile(fileB.path, fileB.handle)
+    testfileA2 = BufferedIOFile(fileA.path)
+    files = {testfileA, testfileB, testfileA2}
+    assert testfileA == testfileA2
+    assert testfileA == fileA.path
+    assert len(files) == 2
+    assert files == {testfileA, testfileB} == {testfileA2, testfileB}
+
 def test_readbychunk(fileA):
     testfile = BufferedIOFile(fileA.path, fileA.handle, chunksize=4)
     contents = [chunk for chunk in testfile]
