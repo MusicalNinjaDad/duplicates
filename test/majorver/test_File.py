@@ -28,3 +28,9 @@ def test_immutability(fileA, fileB):
         testfile.path = Path('dir1')
     with raises(AttributeError):
         testfile.handle = fileB.handle
+
+def test_hashable(fileA, fileB):
+        testfileA = BufferedIOFile(fileA.path, fileA.handle)
+        testfileB = BufferedIOFile(fileB.path, fileB.handle)
+        files = {testfileA, testfileB}
+        assert files
