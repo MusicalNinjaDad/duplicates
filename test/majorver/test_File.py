@@ -69,3 +69,14 @@ def test_openhandleoninit(testfiles):
     thisprocess = psutil.Process()
     openfiles = thisprocess.open_files()
     assert not any(Path(f.path) == Path(fileApath) for f in openfiles) #file is closed correctly
+
+def test_readchunk(testfiles):
+    fileBpath = Path(testfiles / 'dir2' / 'fileB.txt')
+    testfile = BufferedIOFile(fileBpath, chunksize=16)
+    chunk = testfile.readchunk()
+    assert chunk == b'some longer rand'
+    chunk = testfile.readchunk()
+    assert chunk == b'om text'
+    thisprocess = psutil.Process()
+    openfiles = thisprocess.open_files()
+    assert not any(Path(f.path) == Path(fileBpath) for f in openfiles) #file is closed correctly

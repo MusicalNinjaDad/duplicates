@@ -53,12 +53,21 @@ class BufferedIOFile():
         if self.handle is None:
             try:
                 openedhandle = self.path.open('rb')
+                self._iterator = self._FileIterator(openedhandle, self.chunksize)
                 return self._FileIterator(openedhandle, self.chunksize)
             except:
                 openedhandle.close()
         else:
-            return self._FileIterator(self.handle, self.chunksize)
-        
+            self._iterator = self._FileIterator(self.handle, self.chunksize)
+            return self._iterator
+
+    def readchunk(self):
+        try:
+            return next(self._iterator)
+        except AttributeError:
+            self._iterator = iter(self)
+            return next(self._iterator)
+
     def __hash__(self) -> int:
         try:
             return self.cachedhash
