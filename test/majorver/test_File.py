@@ -1,4 +1,5 @@
 from collections import namedtuple
+import psutil
 from pytest import fixture, raises
 from pathlib import Path
 
@@ -49,3 +50,12 @@ def test_defaultchunksize(fileA):
     testfile = BufferedIOFile(fileA.path, fileA.handle)
     contents = [chunk for chunk in testfile]
     assert contents == [b'some random text']
+
+def test_openhandleoninit(testfiles):
+    fileApath = Path(testfiles / 'dir1' / 'fileA.txt')
+    testfile = BufferedIOFile(fileApath)
+    contents = [chunk for chunk in testfile]
+    assert contents == [b'some random text']
+    thisprocess = psutil.Process()
+    openfiles = thisprocess.open_files()
+    assert not any(Path(f.path) == Path(fileApath) for f in openfiles)
