@@ -68,3 +68,15 @@ class BufferedIOFile():
         
     def __eq__(self, other: object) -> bool:
         return isinstance(other, (Path, BufferedIOFile)) and hash(self) == hash(other)
+
+def comparefiles(filestocompare: set[frozenset[BufferedIOFile]]):
+    newsetsoffiles = set()
+    for setoffiles in filestocompare:
+        tempdict = {}
+        for file in setoffiles:
+            chunk = file.readchunk()
+            if chunk in tempdict:
+                tempdict[chunk].add(file)
+            else:
+                tempdict[chunk] = {file}
+        newsetsoffiles.add(map(frozenset, tempdict.values()))
