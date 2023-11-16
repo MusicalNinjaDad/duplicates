@@ -30,7 +30,12 @@ def test_immutability(fileA, fileB):
         testfile.handle = fileB.handle
 
 def test_hashable(fileA, fileB):
-        testfileA = BufferedIOFile(fileA.path, fileA.handle)
-        testfileB = BufferedIOFile(fileB.path, fileB.handle)
-        files = {testfileA, testfileB}
-        assert files
+    testfileA = BufferedIOFile(fileA.path, fileA.handle)
+    testfileB = BufferedIOFile(fileB.path, fileB.handle)
+    files = {testfileA, testfileB}
+    assert files
+
+def test_readbychunk(fileA):
+    testfile = BufferedIOFile(fileA.path, fileA.handle, chunksize=4)
+    contents = [chunk for chunk in testfile]
+    assert contents == [b'some', b' ran', b'dom ', b'text']
