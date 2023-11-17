@@ -1,12 +1,10 @@
-from pytest import mark, raises
-
-from . import BufferedIOFile, Path
+from . import BufferedIOFile
 from .fixtures import *
 
 def test_initialisation(fileA):
-    testfile = BufferedIOFile(fileA.path, fileA.handle)
-    assert testfile.path == fileA.path
-    assert testfile.handle == fileA.handle
+    testfile = BufferedIOFile(fileA.paths['fileA'], fileA.handles['fileA'])
+    assert testfile.path == fileA.paths['fileA']
+    assert testfile.handle == fileA.handles['fileA']
 
 def test_immutability(fileA, fileB):
     testfile = BufferedIOFile(fileA.path, fileA.handle)

@@ -2,7 +2,7 @@ from collections import namedtuple
 from dataclasses import dataclass
 from io import BufferedIOBase
 from pathlib import Path
-from pytest import fixture
+from pytest import fixture, mark, raises
 
 def _copy(self: Path, target: Path) -> None:
     from shutil import copytree
@@ -38,7 +38,7 @@ def copiedtestfiles(tmp_path) -> testfiles:
             'fileA': Path(tmp_path / 'dir1' / 'fileA.txt'),
             'fileB': Path(tmp_path / 'dir2' / 'fileB.txt')
         },
-        handles = None
+        handles = {}
     )
     return foo
 
@@ -56,8 +56,10 @@ def duplicatedir1(copiedtestfiles) -> Path:
     return copiedtestfiles
 
 @fixture
-def fileA(testfiles):
-    yield from openfileandreturntuple(Path(testfiles / 'dir1' / 'fileA.txt'))
+def fileA(copiedtestfiles):
+    with copiedtestfiles.paths['fileA'].open('rb') as filehandle:
+        copiedtestfiles.handles['fileA'] = filehandle
+        yield copiedtestfiles
 
 @fixture
 def fileB(testfiles):
