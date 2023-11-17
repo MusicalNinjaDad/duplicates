@@ -49,10 +49,11 @@ def copiedtestfiles(tmp_path) -> testfiles:
 #     return tmp_path
 
 @fixture
-def duplicatedir1(testfiles) -> Path:
-    tmp_path = testfiles
-    dir1.copy(testfiles / 'alt')
-    return tmp_path
+def duplicatedir1(copiedtestfiles) -> Path:
+    dir1.copy(copiedtestfiles.root / 'alt')
+    copiedtestfiles.paths['dir1-copy'] = copiedtestfiles.root / 'alt' 
+    copiedtestfiles.paths['fileA-copy'] = copiedtestfiles.root / 'alt' / 'dir1' / 'fileA.txt'
+    return copiedtestfiles
 
 @fixture
 def fileA(testfiles):
