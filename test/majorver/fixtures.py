@@ -42,12 +42,6 @@ def copiedtestfiles(tmp_path) -> testfiles:
     )
     return tmp_files
 
-# @fixture
-# def testfiles(tmp_path) -> Path:
-#     dir1.copy(tmp_path)
-#     dir2.copy(tmp_path)
-#     return tmp_path
-
 @fixture
 def duplicatedir1(copiedtestfiles) -> Path:
     dir1.copy(copiedtestfiles.root / 'alt')

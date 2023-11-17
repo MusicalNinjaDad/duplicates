@@ -1,5 +1,3 @@
-from pytest import mark
-
 from . import listfiles, filesofsamesize, BufferedIOFile, comparefiles
 from .fixtures import *
 
