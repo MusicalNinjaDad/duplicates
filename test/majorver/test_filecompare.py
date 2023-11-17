@@ -10,7 +10,6 @@ def test_fileissamesize(duplicatedir1):
 
 @mark.xfail
 def test_samefilecontents(duplicatedir1):
-    testfiles = duplicatedir1
-    filestocompare = {frozenset(map(BufferedIOFile,(testfiles / 'dir1' / 'fileA.txt', testfiles / 'alt' / 'dir1' / 'fileA.txt')))}
+    filestocompare = {frozenset(map(BufferedIOFile,(duplicatedir1.paths['fileA'], duplicatedir1.paths['fileA-copy'])))}
     identicalfiles = comparefiles(filestocompare)
     assert identicalfiles == filestocompare
