@@ -56,10 +56,19 @@ def duplicatedir1(copiedtestfiles) -> Path:
     return copiedtestfiles
 
 @fixture
-def fileA(copiedtestfiles):
-    with copiedtestfiles.paths['fileA'].open('rb') as filehandle:
-        copiedtestfiles.handles['fileA'] = filehandle
-        yield copiedtestfiles
+def fileAopened(tmp_path): #don't use copiedtestfiles but rather copy the dir specifically needed. Call it fileAopened
+    dir1.copy(tmp_path)
+    foo = testfiles(
+        root = tmp_path,
+        paths = {
+            'dir1': Path(tmp_path / 'dir1'),
+            'fileA': Path(tmp_path / 'dir1' / 'fileA.txt'),
+        },
+        handles = {}
+    )
+    with foo.paths['fileA'].open('rb') as filehandle:
+        foo.handles['fileA'] = filehandle
+        yield foo
 
 @fixture
 def fileB(testfiles):

@@ -1,10 +1,10 @@
 from . import BufferedIOFile
 from .fixtures import *
 
-def test_initialisation(fileA):
-    testfile = BufferedIOFile(fileA.paths['fileA'], fileA.handles['fileA'])
-    assert testfile.path == fileA.paths['fileA']
-    assert testfile.handle == fileA.handles['fileA']
+def test_initialisation(fileAopened):
+    testfile = BufferedIOFile(fileAopened.paths['fileA'], fileAopened.handles['fileA'])
+    assert testfile.path == fileAopened.paths['fileA']
+    assert testfile.handle == fileAopened.handles['fileA']
 
 def test_immutability(fileA, fileB):
     testfile = BufferedIOFile(fileA.path, fileA.handle)
@@ -30,8 +30,8 @@ def test_uniquenessbasedonpath(fileA, fileB):
     assert len(files) == 2
     assert files == {testfileA, testfileB} == {testfileA2, testfileB}
 
-def test_readbychunk(fileA):
-    testfile = BufferedIOFile(fileA.path, fileA.handle, chunksize=4)
+def test_readbychunk(fileAopened):
+    testfile = BufferedIOFile(fileAopened.paths['fileA'], fileAopened.handles['fileA'], chunksize=4)
     contents = [chunk for chunk in testfile]
     assert contents == [b'some', b' ran', b'dom ', b'text']
 
@@ -40,8 +40,8 @@ def test_notdivisiblebychunksize(fileB):
     contents = [chunk for chunk in testfile]
     assert contents == [b'some longer rand', b'om text']
 
-def test_defaultchunksize(fileA):
-    testfile = BufferedIOFile(fileA.path, fileA.handle)
+def test_defaultchunksize(fileAopened):
+    testfile = BufferedIOFile(fileAopened.paths['fileA'], fileAopened.handles['fileA'])
     contents = [chunk for chunk in testfile]
     assert contents == [b'some random text']
 
