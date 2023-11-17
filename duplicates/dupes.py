@@ -25,7 +25,7 @@ class BufferedIOFile():
     """
     MB = 1024**2
 
-    def __init__(self, path: Path, handle: BufferedIOBase = None, chunksize=100*MB):
+    def __init__(self, path: Path, handle: BufferedIOBase, chunksize=100*MB):
         self.__path = path
         self.__handle = handle
         self.chunksize = chunksize        
@@ -47,21 +47,14 @@ class BufferedIOFile():
             if chunk:
                 return chunk
             else:
-                raise StopIteration        
+                raise StopIteration
 
     def __iter__(self):
-        if self.handle is None:
-            try:
-                openedhandle = self.path.open('rb')
-                self._iterator = self._FileIterator(openedhandle, self.chunksize)
-                return self._FileIterator(openedhandle, self.chunksize)
-            except:
-                openedhandle.close()
-        else:
-            self._iterator = self._FileIterator(self.handle, self.chunksize)
-            return self._iterator
+        self._iterator = self._FileIterator(self.handle, self.chunksize)
+        return self._iterator
 
     def readchunk(self):
+        #if next() then ... else close and raise EOF
         try:
             return next(self._iterator)
         except AttributeError:

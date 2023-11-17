@@ -1,6 +1,6 @@
 from collections import namedtuple
 import psutil
-from pytest import fixture, raises
+from pytest import fixture, mark, raises
 from pathlib import Path
 
 from . import BufferedIOFile, testfiles
@@ -39,7 +39,8 @@ def test_hashable(fileA, fileB):
 def test_uniquenessbasedonpath(fileA, fileB):
     testfileA = BufferedIOFile(fileA.path, fileA.handle)
     testfileB = BufferedIOFile(fileB.path, fileB.handle)
-    testfileA2 = BufferedIOFile(fileA.path)
+    with fileA.path.open() as fileA2Handle:
+        testfileA2 = BufferedIOFile(fileA.path, fileA2Handle)
     assert testfileA == testfileA2
     assert testfileA == fileA.path
     files = {testfileA, testfileB, testfileA2}
@@ -61,6 +62,7 @@ def test_defaultchunksize(fileA):
     contents = [chunk for chunk in testfile]
     assert contents == [b'some random text']
 
+@mark.skip(reason="Deprecated")
 def test_openhandleoninit(testfiles):
     fileApath = Path(testfiles / 'dir1' / 'fileA.txt')
     testfile = BufferedIOFile(fileApath)
@@ -70,13 +72,9 @@ def test_openhandleoninit(testfiles):
     openfiles = thisprocess.open_files()
     assert not any(Path(f.path) == Path(fileApath) for f in openfiles) #file is closed correctly
 
-def test_readchunk(testfiles):
-    fileBpath = Path(testfiles / 'dir2' / 'fileB.txt')
-    testfile = BufferedIOFile(fileBpath, chunksize=16)
+def test_readchunk(fileB):
+    testfile = BufferedIOFile(fileB.path, fileB.handle, chunksize=16)
     chunk = testfile.readchunk()
     assert chunk == b'some longer rand'
     chunk = testfile.readchunk()
     assert chunk == b'om text'
-    thisprocess = psutil.Process()
-    openfiles = thisprocess.open_files()
-    assert not any(Path(f.path) == Path(fileBpath) for f in openfiles) #file is closed correctly
