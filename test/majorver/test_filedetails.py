@@ -1,20 +1,20 @@
 from recurtools import flatten
 
-from . import listfiles, Path
+from . import listfiles
 from .fixtures import *
 
-def test_fileslisted(testfiles, fileA, fileB):
-    filesdict = listfiles(testfiles)
+def test_fileslisted(copiedtestfiles):
+    filesdict = listfiles(copiedtestfiles.root)
     files = [file for file in flatten(filesdict.values())]
     assert len(files) == 2
-    assert fileA.path in files
-    assert fileB.path in files
+    assert copiedtestfiles.paths['fileA'] in files
+    assert copiedtestfiles.paths['fileB'] in files
 
-def test_filesindexedbysize(testfiles, fileA, fileB):
-    filesdict = listfiles(testfiles)
+def test_filesindexedbysize(copiedtestfiles):
+    filesdict = listfiles(copiedtestfiles.root)
     assert filesdict == {
-        16: {fileA.path},
-        23: {fileB.path}
+        16: copiedtestfiles.paths['fileA'],
+        23: copiedtestfiles.paths['fileB']
     }
 
 def test_filesofsamesize(duplicatedir1, fileA, fileB):
