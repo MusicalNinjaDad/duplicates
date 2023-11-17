@@ -1,7 +1,7 @@
 from recurtools import flatten
 
 from . import listfiles
-from .fixtures import *
+from .testimports import *
 
 def test_fileslisted(copiedtestfiles):
     filesdict = listfiles(copiedtestfiles.root)

@@ -1,5 +1,5 @@
 from . import BufferedIOFile
-from .fixtures import *
+from .testimports import *
 
 def test_initialisation(fileAopened):
     testfile = BufferedIOFile(fileAopened.paths['fileA'], fileAopened.handles['fileA'])

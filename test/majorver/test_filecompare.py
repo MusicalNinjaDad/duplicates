@@ -1,5 +1,5 @@
 from . import listfiles, filesofsamesize, BufferedIOFile, comparefiles
-from .fixtures import *
+from .testimports import *
 
 def test_fileissamesize(duplicatedir1):
     filesdict = listfiles(duplicatedir1.root)
