@@ -13,8 +13,8 @@ def test_fileslisted(copiedtestfiles):
 def test_filesindexedbysize(copiedtestfiles):
     filesdict = listfiles(copiedtestfiles.root)
     assert filesdict == {
-        16: copiedtestfiles.paths['fileA'],
-        23: copiedtestfiles.paths['fileB']
+        16: {copiedtestfiles.paths['fileA']},
+        23: {copiedtestfiles.paths['fileB']}
     }
 
 def test_filesofsamesize(duplicatedir1, fileA, fileB):
