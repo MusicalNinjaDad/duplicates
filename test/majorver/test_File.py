@@ -6,12 +6,12 @@ def test_initialisation(fileAopened):
     assert testfile.path == fileAopened.paths['fileA']
     assert testfile.handle == fileAopened.handles['fileA']
 
-def test_immutability(fileA, fileB):
-    testfile = BufferedIOFile(fileA.path, fileA.handle)
+def test_immutability(fileAopened, fileBopened):
+    testfile = BufferedIOFile(fileAopened.paths['fileA'], fileAopened.handles['fileA'])
     with raises(AttributeError):
         testfile.path = Path('dir1')
     with raises(AttributeError):
-        testfile.handle = fileB.handle
+        testfile.handle = fileBopened.handles['fileB']
 
 def test_hashable(fileA, fileB):
     testfileA = BufferedIOFile(fileA.path, fileA.handle)
