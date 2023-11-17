@@ -1,5 +1,7 @@
 from pytest import mark
-from . import listfiles, filesofsamesize, Path, duplicatedir1, testfiles, BufferedIOFile, comparefiles
+
+from . import listfiles, filesofsamesize, BufferedIOFile, comparefiles
+from .fixtures import *
 
 def test_fileissamesize(duplicatedir1):
     testfiles = duplicatedir1

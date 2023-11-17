@@ -1,22 +1,7 @@
-from collections import namedtuple
-import psutil
-from pytest import fixture, mark, raises
-from pathlib import Path
+from pytest import mark, raises
 
-from . import BufferedIOFile, testfiles
-
-@fixture
-def fileA(testfiles):
-    yield from openfileandreturntuple(Path(testfiles / 'dir1' / 'fileA.txt'))
-
-@fixture
-def fileB(testfiles):
-    yield from openfileandreturntuple(Path(testfiles / 'dir2' / 'fileB.txt'))
-
-def openfileandreturntuple(filepath):
-    with filepath.open('rb') as filehandle:
-        yield(namedtuple('testfile', ['path', 'handle'])(filepath, filehandle))
-
+from . import BufferedIOFile, Path
+from .fixtures import *
 
 def test_initialisation(fileA):
     testfile = BufferedIOFile(fileA.path, fileA.handle)
@@ -61,16 +46,6 @@ def test_defaultchunksize(fileA):
     testfile = BufferedIOFile(fileA.path, fileA.handle)
     contents = [chunk for chunk in testfile]
     assert contents == [b'some random text']
-
-@mark.skip(reason="Deprecated")
-def test_openhandleoninit(testfiles):
-    fileApath = Path(testfiles / 'dir1' / 'fileA.txt')
-    testfile = BufferedIOFile(fileApath)
-    contents = [chunk for chunk in testfile]
-    assert contents == [b'some random text'] # file is opened and read correctly
-    thisprocess = psutil.Process()
-    openfiles = thisprocess.open_files()
-    assert not any(Path(f.path) == Path(fileApath) for f in openfiles) #file is closed correctly
 
 def test_readchunk(fileB):
     testfile = BufferedIOFile(fileB.path, fileB.handle, chunksize=16)
