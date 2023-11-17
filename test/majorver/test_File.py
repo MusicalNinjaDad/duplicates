@@ -13,19 +13,19 @@ def test_immutability(fileAopened, fileBopened):
     with raises(AttributeError):
         testfile.handle = fileBopened.handles['fileB']
 
-def test_hashable(fileA, fileB):
-    testfileA = BufferedIOFile(fileA.path, fileA.handle)
-    testfileB = BufferedIOFile(fileB.path, fileB.handle)
+def test_hashable(fileAopened, fileBopened):
+    testfileA = BufferedIOFile(fileAopened.paths['fileA'], fileAopened.handles['fileA'])
+    testfileB = BufferedIOFile(fileBopened.paths['fileB'], fileBopened.handles['fileB'])
     files = {testfileA, testfileB}
     assert files
 
-def test_uniquenessbasedonpath(fileA, fileB):
-    testfileA = BufferedIOFile(fileA.path, fileA.handle)
-    testfileB = BufferedIOFile(fileB.path, fileB.handle)
-    with fileA.path.open() as fileA2Handle:
-        testfileA2 = BufferedIOFile(fileA.path, fileA2Handle)
+def test_uniquenessbasedonpath(fileAopened, fileBopened):
+    testfileA = BufferedIOFile(fileAopened.paths['fileA'], fileAopened.handles['fileA'])
+    testfileB = BufferedIOFile(fileBopened.paths['fileB'], fileBopened.handles['fileB'])
+    with fileAopened.paths['fileA'].open() as fileA2Handle:
+        testfileA2 = BufferedIOFile(fileAopened.paths['fileA'], fileA2Handle)
     assert testfileA == testfileA2
-    assert testfileA == fileA.path
+    assert testfileA == fileAopened.paths['fileA']
     files = {testfileA, testfileB, testfileA2}
     assert len(files) == 2
     assert files == {testfileA, testfileB} == {testfileA2, testfileB}
@@ -35,8 +35,8 @@ def test_readbychunk(fileAopened):
     contents = [chunk for chunk in testfile]
     assert contents == [b'some', b' ran', b'dom ', b'text']
 
-def test_notdivisiblebychunksize(fileB):
-    testfile = BufferedIOFile(fileB.path, fileB.handle, chunksize=16)
+def test_notdivisiblebychunksize(fileBopened):
+    testfile = BufferedIOFile(fileBopened.paths['fileB'], fileBopened.handles['fileB'], chunksize=16)
     contents = [chunk for chunk in testfile]
     assert contents == [b'some longer rand', b'om text']
 
@@ -45,8 +45,8 @@ def test_defaultchunksize(fileAopened):
     contents = [chunk for chunk in testfile]
     assert contents == [b'some random text']
 
-def test_readchunk(fileB):
-    testfile = BufferedIOFile(fileB.path, fileB.handle, chunksize=16)
+def test_readchunk(fileBopened):
+    testfile = BufferedIOFile(fileBopened.paths['fileB'], fileBopened.handles['fileB'], chunksize=16)
     chunk = testfile.readchunk()
     assert chunk == b'some longer rand'
     chunk = testfile.readchunk()
