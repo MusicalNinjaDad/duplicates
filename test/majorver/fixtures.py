@@ -30,7 +30,7 @@ def openfileandreturntuple(filepath):
 def copiedtestfiles(tmp_path) -> testfiles:
     dir1.copy(tmp_path)
     dir2.copy(tmp_path)
-    foo = testfiles(
+    tmp_files = testfiles(
         root = tmp_path,
         paths = {
             'dir1': Path(tmp_path / 'dir1'),
@@ -40,7 +40,7 @@ def copiedtestfiles(tmp_path) -> testfiles:
         },
         handles = {}
     )
-    return foo
+    return tmp_files
 
 # @fixture
 # def testfiles(tmp_path) -> Path:
@@ -58,7 +58,7 @@ def duplicatedir1(copiedtestfiles) -> Path:
 @fixture
 def fileAopened(tmp_path): #don't use copiedtestfiles but rather copy the dir specifically needed. Call it fileAopened
     dir1.copy(tmp_path)
-    foo = testfiles(
+    tmp_files = testfiles(
         root = tmp_path,
         paths = {
             'dir1': Path(tmp_path / 'dir1'),
@@ -66,9 +66,9 @@ def fileAopened(tmp_path): #don't use copiedtestfiles but rather copy the dir sp
         },
         handles = {}
     )
-    with foo.paths['fileA'].open('rb') as filehandle:
-        foo.handles['fileA'] = filehandle
-        yield foo
+    with tmp_files.paths['fileA'].open('rb') as filehandle:
+        tmp_files.handles['fileA'] = filehandle
+        yield tmp_files
 
 @fixture
 def fileB(testfiles):
