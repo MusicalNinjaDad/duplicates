@@ -1,4 +1,3 @@
-from collections import namedtuple
 from dataclasses import dataclass
 from io import BufferedIOBase
 from pathlib import Path
@@ -21,10 +20,6 @@ class testfiles():
     root: Path
     paths: dict[str: Path]
     handles: dict[str: BufferedIOBase]
-
-def openfileandreturntuple(filepath):
-    with filepath.open('rb') as filehandle:
-        yield(namedtuple('testfile', ['path', 'handle'])(filepath, filehandle))
 
 @fixture
 def copiedtestfiles(tmp_path) -> testfiles:
