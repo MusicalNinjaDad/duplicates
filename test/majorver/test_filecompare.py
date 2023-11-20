@@ -1,10 +1,10 @@
 from . import listfiles, filesofsamesize, BufferedIOFile, comparefiles
 from .testimports import *
 
-def test_fileissamesize(duplicatedir1):
-    filesdict = listfiles(duplicatedir1.root)
+def test_fileissamesize(copiedtestfiles, duplicatedir1):
+    filesdict = listfiles(copiedtestfiles.root)
     duplicatefiles = filesofsamesize(filesdict)
-    assert duplicatefiles == {frozenset((duplicatedir1.paths['fileA'], duplicatedir1.paths['fileA-copy']))}
+    assert duplicatefiles == {frozenset((copiedtestfiles.paths['fileA'], copiedtestfiles.paths['fileA-copy']))}
 
 @mark.xfail
 def test_samefilecontents(duplicatedir1):

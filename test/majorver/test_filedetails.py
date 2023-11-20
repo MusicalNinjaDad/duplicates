@@ -17,11 +17,11 @@ def test_filesindexedbysize(copiedtestfiles):
         23: {copiedtestfiles.paths['fileB']}
     }
 
-def test_filesofsamesize(duplicatedir1):
-    filesdict = listfiles(duplicatedir1.root)
+def test_filesofsamesize(copiedtestfiles, duplicatedir1):
+    filesdict = listfiles(copiedtestfiles.root)
     assert len(filesdict) == 2
     assert filesdict[16] == {
-        duplicatedir1.paths['fileA'],
-        duplicatedir1.paths['fileA-copy']
+        copiedtestfiles.paths['fileA'],
+        copiedtestfiles.paths['fileA-copy']
     }
-    assert filesdict[23] == {duplicatedir1.paths['fileB']}
+    assert filesdict[23] == {copiedtestfiles.paths['fileB']}
