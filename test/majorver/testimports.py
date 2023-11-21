@@ -38,11 +38,18 @@ def copiedtestfiles(tmp_path) -> testfiles:
     return tmp_files
 
 @fixture
-def duplicatedir1(copiedtestfiles) -> Path:
+def duplicatedir1(copiedtestfiles) -> testfiles:
     dir1.copy(copiedtestfiles.root / 'alt')
     copiedtestfiles.paths['dir1-copy'] = copiedtestfiles.root / 'alt' 
     copiedtestfiles.paths['fileA-copy'] = copiedtestfiles.root / 'alt' / 'dir1' / 'fileA.txt'
     return copiedtestfiles
+
+@fixture
+def twocopiesfileAopen(duplicatedir1) -> testfiles:
+    with duplicatedir1.paths['fileA'].open('rb') as handle1, duplicatedir1.paths['fileA-copy'].open('rb') as handle2:
+        duplicatedir1.handles['fileA'] = handle1
+        duplicatedir1.handles['fileA-copy'] = handle2
+        yield duplicatedir1
 
 @fixture
 def fileAopened(copiedtestfiles):
@@ -54,4 +61,10 @@ def fileAopened(copiedtestfiles):
 def fileBopened(copiedtestfiles):
     with copiedtestfiles.paths['fileB'].open('rb') as filehandle:
         copiedtestfiles.handles['fileB'] = filehandle
+        yield
+
+@fixture
+def fileAcopyopened(copiedtestfiles):
+    with copiedtestfiles.paths['fileA-copy'].open('rb') as filehandle:
+        copiedtestfiles.handles['fileA-copy'] = filehandle
         yield

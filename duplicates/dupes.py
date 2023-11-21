@@ -71,14 +71,17 @@ class BufferedIOFile():
     def __eq__(self, other: object) -> bool:
         return isinstance(other, (Path, BufferedIOFile)) and hash(self) == hash(other)
 
-def comparefiles(filestocompare: set[frozenset[BufferedIOFile]]):
-    newsetsoffiles = set()
-    for setoffiles in filestocompare:
-        tempdict = {}
-        for file in setoffiles:
-            chunk = file.readchunk()
+def comparefiles(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[BufferedIOFile]]:
+    tempdict = {}
+    for file in filestocompare:
+        chunk = file.readchunk()
+        if chunk:
             if chunk in tempdict:
                 tempdict[chunk].add(file)
             else:
                 tempdict[chunk] = {file}
-        newsetsoffiles.add(map(frozenset, tempdict.values()))
+        else: #EOF
+            raise NotImplementedError 
+    possibleduplicates = set(frozenset(files) for chunk, files in tempdict.items())
+    return possibleduplicates
+    
