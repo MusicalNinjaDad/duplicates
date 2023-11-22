@@ -60,6 +60,8 @@ class BufferedIOFile():
         except AttributeError:
             self._iterator = iter(self)
             return next(self._iterator)
+        except StopIteration:
+            return b'' #same interface as file.read() - return empty string at EOF
 
     def __hash__(self) -> int:
         try:
@@ -81,7 +83,7 @@ def comparefiles(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[Buf
             else:
                 tempdict[chunk] = {file}
         else: #EOF
-            raise NotImplementedError 
+            raise EOFError 
     possibleduplicates = set(frozenset(files) for chunk, files in tempdict.items())
     return possibleduplicates
     

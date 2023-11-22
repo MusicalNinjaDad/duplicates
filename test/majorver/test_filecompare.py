@@ -13,3 +13,19 @@ def test_samefilecontentsfirstchunk(copiedtestfiles, duplicatedir1, fileAopened,
     ))
     identicalfiles = comparefiles(filestocompare)
     assert identicalfiles == {filestocompare}
+
+def test_samefilecontentsstopsatEOF(copiedtestfiles, duplicatedir1, fileAopened, fileAcopyopened):
+    filestocompare = frozenset((
+        BufferedIOFile(copiedtestfiles.paths['fileA'], copiedtestfiles.handles['fileA'], chunksize=4),
+        BufferedIOFile(copiedtestfiles.paths['fileA-copy'], copiedtestfiles.handles['fileA-copy'], chunksize=4)
+    ))
+    chunkcount = 0
+    while True:
+        try:
+            identicalfiles = comparefiles(filestocompare)
+        except EOFError:
+            break
+        else:
+            chunkcount += 1
+    assert identicalfiles == {filestocompare}
+    assert chunkcount == 4
