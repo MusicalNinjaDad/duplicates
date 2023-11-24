@@ -68,3 +68,15 @@ def fileAcopyopened(copiedtestfiles):
     with copiedtestfiles.paths['fileA-copy'].open('rb') as filehandle:
         copiedtestfiles.handles['fileA-copy'] = filehandle
         yield
+
+@fixture
+def fileAhardlinked(copiedtestfiles):
+    copiedtestfiles.paths['fileA-link'] = copiedtestfiles.root / 'fileAlink.txt'
+    copiedtestfiles.paths['fileA-link'].hardlink_to(copiedtestfiles.paths['fileA'])
+    return copiedtestfiles
+
+@fixture
+def fileAlinkopened(copiedtestfiles):
+    with copiedtestfiles.paths['fileA-link'].open('rb') as filehandle:
+        copiedtestfiles.handles['fileA-link'] = filehandle
+        yield

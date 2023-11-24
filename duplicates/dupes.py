@@ -87,3 +87,15 @@ def comparefiles(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[Buf
     possibleduplicates = set(frozenset(files) for chunk, files in tempdict.items())
     return possibleduplicates
     
+def drophardlinks(filestocheck: frozenset[BufferedIOFile]) -> frozenset[BufferedIOFile]:    
+    knownids = set()
+    uniquefiles = set()
+    for file in filestocheck:
+        id = file.path.stat().st_ino
+        if id in knownids:
+            pass
+        else:
+            knownids.add(id)
+            uniquefiles.add(file)
+    return uniquefiles
+    

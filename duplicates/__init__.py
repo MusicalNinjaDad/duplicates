@@ -1,1 +1,1 @@
-from .dupes import listfiles, filesofsamesize, BufferedIOFile, comparefiles
+from .dupes import listfiles, filesofsamesize, BufferedIOFile, comparefiles, drophardlinks
