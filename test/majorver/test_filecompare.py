@@ -1,4 +1,3 @@
-import os
 from . import listfiles, filesofsamesize, BufferedIOFile, comparefiles, drophardlinks
 from .testimports import *
 
