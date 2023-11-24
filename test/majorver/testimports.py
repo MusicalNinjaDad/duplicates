@@ -16,16 +16,16 @@ dir1 = Path('test/majorver/data/dir1')
 dir2 = Path('test/majorver/data/dir2')
 
 @dataclass
-class testfiles():
+class Testfiles():
     root: Path
     paths: dict[str: Path]
     handles: dict[str: BufferedIOBase]
 
 @fixture
-def copiedtestfiles(tmp_path) -> testfiles:
+def copiedtestfiles(tmp_path) -> Testfiles:
     dir1.copy(tmp_path)
     dir2.copy(tmp_path)
-    tmp_files = testfiles(
+    tmp_files = Testfiles(
         root = tmp_path,
         paths = {
             'dir1': Path(tmp_path / 'dir1'),
@@ -38,14 +38,14 @@ def copiedtestfiles(tmp_path) -> testfiles:
     return tmp_files
 
 @fixture
-def duplicatedir1(copiedtestfiles) -> testfiles:
+def duplicatedir1(copiedtestfiles) -> Testfiles:
     dir1.copy(copiedtestfiles.root / 'alt')
     copiedtestfiles.paths['dir1-copy'] = copiedtestfiles.root / 'alt' 
     copiedtestfiles.paths['fileA-copy'] = copiedtestfiles.root / 'alt' / 'dir1' / 'fileA.txt'
     return copiedtestfiles
 
 @fixture
-def twocopiesfileAopen(duplicatedir1) -> testfiles:
+def twocopiesfileAopen(duplicatedir1) -> Testfiles:
     with duplicatedir1.paths['fileA'].open('rb') as handle1, duplicatedir1.paths['fileA-copy'].open('rb') as handle2:
         duplicatedir1.handles['fileA'] = handle1
         duplicatedir1.handles['fileA-copy'] = handle2
