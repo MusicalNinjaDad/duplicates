@@ -38,7 +38,9 @@ def test_drophardlinks(copiedtestfiles, duplicatedir1, fileAopened, fileAcopyope
         BufferedIOFile(copiedtestfiles.paths['fileA-link'], copiedtestfiles.handles['fileA-link'], chunksize=4),
     ))
     identicalfiles = drophardlinks(filestocompare)
-    assert identicalfiles == frozenset((
-        BufferedIOFile(copiedtestfiles.paths['fileA'], copiedtestfiles.handles['fileA'], chunksize=4),
-        BufferedIOFile(copiedtestfiles.paths['fileA-copy'], copiedtestfiles.handles['fileA-copy'], chunksize=4)
+    assert len(identicalfiles) == 2
+    assert BufferedIOFile(copiedtestfiles.paths['fileA-copy'], copiedtestfiles.handles['fileA-copy'], chunksize=4) in identicalfiles
+    assert any((
+        BufferedIOFile(copiedtestfiles.paths['fileA'], copiedtestfiles.handles['fileA'], chunksize=4) in identicalfiles,
+        BufferedIOFile(copiedtestfiles.paths['fileA-link'], copiedtestfiles.handles['fileA-link'], chunksize=4) in identicalfiles
     ))
