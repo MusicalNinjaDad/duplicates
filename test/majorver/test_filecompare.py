@@ -1,4 +1,5 @@
-from . import listfiles, filesofsamesize, BufferedIOFile, comparefiles, drophardlinks
+from recurtools import flatten
+from . import listfiles, filesofsamesize, BufferedIOFile, comparefiles, drophardlinks, finddupes
 from .testimports import *
 
 @mark.copyfiles(('fileA',2))
@@ -45,3 +46,24 @@ def test_drophardlinks(copiedtestfiles, filesopen):
         BufferedIOFile(copiedtestfiles.paths['fileA'][0], copiedtestfiles.handles['fileA'][0], chunksize=4) in identicalfiles,
         BufferedIOFile(copiedtestfiles.paths['fileA'][2], copiedtestfiles.handles['fileA'][2], chunksize=4) in identicalfiles
     ))
+
+# @mark.skip('Not yet implemented')
+@mark.copyfiles(('fileA',2), ('fileB', 1))
+@mark.linkfiles(('fileA',1))
+def test_integrate_list_compare(copiedtestfiles):
+    duplicatefiles = finddupes(copiedtestfiles.root)    
+    assert any((
+        duplicatefiles == {16: frozenset((
+                                BufferedIOFile(copiedtestfiles.paths['fileA'][1], chunksize=4),
+                                BufferedIOFile(copiedtestfiles.paths['fileA'][0], chunksize=4)
+                                ))
+                            },
+        duplicatefiles == {16: frozenset((
+                                BufferedIOFile(copiedtestfiles.paths['fileA'][1], chunksize=4),
+                                BufferedIOFile(copiedtestfiles.paths['fileA'][2], chunksize=4)
+                                ))
+                            }
+    ))
+    # filesdict = listfiles(copiedtestfiles.root)
+    # with ExitStack() as stack:
+    #     stack.enter_context(file.open() for file in flatten(filesdict.values()))
