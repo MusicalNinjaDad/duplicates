@@ -15,11 +15,11 @@ def test_samefilecontentsfirstchunk(copiedtestfiles, filesopen):
     identicalfiles = comparefiles(filestocompare)
     assert identicalfiles == {filestocompare}
 
-def test_samefilecontentsstopsatEOF(copiedtestfiles, duplicatedir1, fileAopened, fileAcopyopened):
-    filestocompare = frozenset((
-        BufferedIOFile(copiedtestfiles.paths['fileA'], copiedtestfiles.handles['fileA'], chunksize=4),
-        BufferedIOFile(copiedtestfiles.paths['fileA-copy'], copiedtestfiles.handles['fileA-copy'], chunksize=4)
-    ))
+@mark.copyfiles(('fileA',2))
+def test_samefilecontentsstopsatEOF(copiedtestfiles, filesopen):
+    filestocompare = frozenset(
+        BufferedIOFile(path_handle[0], path_handle[1], chunksize=4) for path_handle in zip(copiedtestfiles.paths['fileA'], copiedtestfiles.handles['fileA'])
+    )
     chunkcount = 0
     while True:
         try:
