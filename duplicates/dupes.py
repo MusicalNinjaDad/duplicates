@@ -54,14 +54,17 @@ class BufferedIOFile():
         return self._iterator
 
     def readchunk(self):
-        #if next() then ... else close and raise EOF
+        """ Read the next chunk from the file (see also chunksize)
+        Final chunk may not be full-size - will only include up to EOF
+        Returns an empty binary string if EOF is passed (analog to file.read())
+        """
         try:
             return next(self._iterator)
         except AttributeError:
             self._iterator = iter(self)
             return next(self._iterator)
         except StopIteration:
-            return b'' #same interface as file.read() - return empty string at EOF
+            return b''
 
     def __hash__(self) -> int:
         try:
