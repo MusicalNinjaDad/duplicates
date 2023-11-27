@@ -42,15 +42,24 @@ def copiedtestfiles(request, tmp_path) -> Testfiles:
         handles = defaultdict(list)
     )
 
-    filestocopy = request.node.get_closest_marker('copyfiles').args
-    for file in filestocopy:
+    filestocopy = request.node.get_closest_marker('copyfiles')
+    for file in filestocopy.args:
         fileid, numcopies = file
         for i in range(numcopies):
             uniquedir = tmp_path / str(uuid.uuid1())
             uniquedir.mkdir()
             sourcefiles.paths[fileid].copy(tmp_path / uniquedir)
             tmp_files.paths[fileid].append(tmp_path / uniquedir / sourcefiles.paths[fileid].name)
-            assert len(tmp_files.paths[fileid]) == i + 1
+    filestolink = request.node.get_closest_marker('linkfiles')
+    if filestolink:
+        for file in filestolink.args:
+            fileid, numcopies = file
+            for i in range(numcopies):
+                uniquedir = tmp_path / str(uuid.uuid1())
+                uniquedir.mkdir()
+                newfile = tmp_path / uniquedir / sourcefiles.paths[fileid].name
+                newfile.hardlink_to(tmp_files.paths[fileid][0])
+                tmp_files.paths[fileid].append(newfile)
     yield tmp_files
 
 @fixture
