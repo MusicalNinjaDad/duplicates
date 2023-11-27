@@ -59,3 +59,14 @@ def test_readchunk(copiedtestfiles, filesopen):
     assert chunk == b'some longer rand'
     chunk = testfile.readchunk()
     assert chunk == b'om text'
+
+@mark.copyfiles(('fileA',1))
+def test_open(copiedtestfiles):
+        testfile = BufferedIOFile(copiedtestfiles.paths['fileA'][0], chunksize=4)
+        assert not testfile.handle
+        with testfile.open():
+            assert testfile.handle
+            assert testfile.readchunk() == b'some'
+        assert not testfile.handle
+        with raises(ValueError):
+            testfile.readchunk()

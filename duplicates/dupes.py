@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from io import BufferedIOBase
 from pathlib import Path
 
@@ -25,7 +26,7 @@ class BufferedIOFile():
     """
     MB = 1024**2
 
-    def __init__(self, path: Path, handle: BufferedIOBase, chunksize=100*MB):
+    def __init__(self, path: Path, handle: BufferedIOBase = None, chunksize: int = 100*MB):
         self.__path = path
         self.__handle = handle
         self.chunksize = chunksize        
@@ -37,6 +38,12 @@ class BufferedIOFile():
     @property
     def handle(self):
         return self.__handle
+    
+    @contextmanager
+    def open(self):
+        with open(self.path, 'rb') as self.__handle: 
+            yield
+            self.__handle = None
 
     class _FileIterator():
         def __init__(self, handle: BufferedIOBase, chunksize: int) -> None:
