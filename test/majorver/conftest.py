@@ -1,7 +1,11 @@
 def pytest_configure(config):
-    config.addinivalue_line(
-        "markers", "copyfiles((file, num),(file, num),...): which files to copy"
-    )
-    config.addinivalue_line(
-        "markers", "linkfiles((file, num),(file, num),...): which files to hardlink"
-    )
+    marks = [
+        "copyfiles((file, num),(file, num),...): which files to copy",
+        "linkfiles((file, num),(file, num),...): which files to hardlink"
+    ]
+
+    def addmarkers(marks):
+        for mark in marks:
+            config.addinivalue_line("markers", mark)
+
+    addmarkers(marks)
