@@ -47,8 +47,8 @@ def test_drophardlinks(copiedtestfiles, filesopen):
         BufferedIOFile(copiedtestfiles.paths['fileA'][2], copiedtestfiles.handles['fileA'][2], chunksize=4) in identicalfiles
     ))
 
-# @mark.skip('Not yet implemented')
-@mark.copyfiles(('fileA',2), ('fileB', 1))
+@mark.xfail
+@mark.copyfiles(('fileA',2), ('fileB', 1), ('fileA2', 1))
 @mark.linkfiles(('fileA',1))
 def test_integrate_list_compare(copiedtestfiles):
     duplicatefiles = finddupes(copiedtestfiles.root)    
@@ -63,7 +63,7 @@ def test_integrate_list_compare(copiedtestfiles):
                                 BufferedIOFile(copiedtestfiles.paths['fileA'][2], chunksize=4)
                                 ))
                             }
-    ))
+    )), f'Following files identified as duplicates: {duplicatefiles}'
     # filesdict = listfiles(copiedtestfiles.root)
     # with ExitStack() as stack:
     #     stack.enter_context(file.open() for file in flatten(filesdict.values()))
