@@ -7,7 +7,6 @@ from pathlib import Path
 
 from pytest import fixture, mark, raises
 
-
 def _copy(self: Path, target: Path) -> None:
     from shutil import copyfile, copytree
     if self.is_dir():
