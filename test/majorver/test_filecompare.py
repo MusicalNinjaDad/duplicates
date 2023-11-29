@@ -1,5 +1,5 @@
 from recurtools import flatten
-from . import listfiles, filesofsamesize, BufferedIOFile, comparefiles, drophardlinks, finddupes
+from . import listfiles, filesofsamesize, BufferedIOFile, comparefiles, drophardlinks, finddupes, recursivecompare
 from .testimports import *
 
 @mark.copyfiles(('fileA',2))
@@ -31,6 +31,21 @@ def test_samefilecontentsstopsatEOF(copiedtestfiles, filesopen):
             chunkcount += 1
     assert identicalfiles == {filestocompare}
     assert chunkcount == 4
+
+@mark.copyfiles(('fileA',2), ('fileA2',3))
+def test_recursivecomparison(copiedtestfiles, filesopen):
+    pathsandhandles = zip(
+        (copiedtestfiles.paths['fileA'] + copiedtestfiles.paths['fileA2']),
+        (copiedtestfiles.handles['fileA'] + copiedtestfiles.handles['fileA2'])
+    )
+    filestocompare = {frozenset(
+        BufferedIOFile(path_handle[0], path_handle[1], chunksize = 4) for path_handle in pathsandhandles
+    )}
+    identicalfiles = recursivecompare(filestocompare)
+    assert identicalfiles == {
+        frozenset(BufferedIOFile(path, chunksize = 4) for path in copiedtestfiles.paths['fileA']),
+        frozenset(BufferedIOFile(path, chunksize = 4) for path in copiedtestfiles.paths['fileA2'])
+    }
 
 @mark.copyfiles(('fileA',2))
 @mark.linkfiles(('fileA',1))

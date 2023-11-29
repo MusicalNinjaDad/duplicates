@@ -104,6 +104,15 @@ def comparefiles(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[Buf
             raise EOFError 
     possibleduplicates = set(frozenset(files) for chunk, files in tempdict.items())
     return possibleduplicates
+
+def recursivecompare(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
+    newsets = set()
+    for setoffiles in setstocompare:
+        newsets |= comparefiles(setoffiles)
+    try:
+        return recursivecompare(newsets)
+    except EOFError:
+        return newsets
     
 def drophardlinks(filestocheck: frozenset[BufferedIOFile]) -> frozenset[BufferedIOFile]:    
     knownids = set()
