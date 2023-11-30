@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, deque
 from contextlib import ExitStack, contextmanager
 from io import BufferedIOBase
 from pathlib import Path
@@ -112,16 +112,11 @@ def recursivecompare(setstocompare: set[frozenset[BufferedIOFile]]) -> set[froze
         return set(files for files in newsets if len(files) > 1) #if difference is only in last chunk ... otherwise EOF may be reached before len(setoffiles) == 1 depending on ordering in set
     
 def drophardlinks(filestocheck: frozenset[BufferedIOFile]) -> frozenset[BufferedIOFile]:    
-    knownids = set()
-    uniquefiles = set()
+    uniqueinos = defaultdict(lambda: deque(maxlen=1))
     for file in filestocheck:
         id = file.path.stat().st_ino
-        if id in knownids:
-            pass
-        else:
-            knownids.add(id)
-            uniquefiles.add(file)
-    return uniquefiles
+        uniqueinos[id] = file
+    return frozenset(uniqueinos.values())
     
 def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
     allfiles = {
