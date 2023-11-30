@@ -122,11 +122,11 @@ def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
     allfiles = {
         size: {BufferedIOFile(path) for path in setofpaths}
         for size, setofpaths in listfiles(rootpath).items()
+        if len(setofpaths) > 1
     }
     nohardlinks = {
         size: drophardlinks(files)
         for size, files in allfiles.items()
-        if len(files) > 1
     }
     dupes = set()
     for fileset in nohardlinks.values():
