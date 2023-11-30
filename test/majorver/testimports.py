@@ -16,9 +16,6 @@ def _copy(self: Path, target: Path) -> None:
 
 Path.copy = _copy
 
-dir1 = Path('test/data/dir1')
-dir2 = Path('test/data/dir2')
-
 @dataclass
 class Testfiles():
     root: Path
