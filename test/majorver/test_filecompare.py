@@ -94,6 +94,11 @@ def test_integrate_list_compare(copiedtestfiles):
                                 ))
                             }
     )), f'Following files identified as duplicates: {duplicatefiles}'
-    # filesdict = listfiles(copiedtestfiles.root)
-    # with ExitStack() as stack:
-    #     stack.enter_context(file.open() for file in flatten(filesdict.values()))
+
+@mark.copyfiles(('fileA',2), ('fileA2',1), ('fileB', 4))
+def test_finddupesemutlipledupes(copiedtestfiles):
+    identicalfiles = finddupes(copiedtestfiles.root)
+    assert identicalfiles == {
+        frozenset(BufferedIOFile(path, chunksize = 4) for path in copiedtestfiles.paths['fileA']),
+        frozenset(BufferedIOFile(path, chunksize = 4) for path in copiedtestfiles.paths['fileB'])
+    }
