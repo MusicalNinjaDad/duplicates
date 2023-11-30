@@ -1,18 +1,16 @@
+from collections import defaultdict
 from contextlib import ExitStack, contextmanager
 from io import BufferedIOBase
 from pathlib import Path
 
 
 def listfiles(in_path: Path) -> dict[int, set]:
-    filedict = dict()
+    filedict = defaultdict(set)
     for root, dirs, files in in_path.walk():
         for file in files:
             filepath = root / file
             size = filepath.stat().st_size
-            if size in filedict:
-                filedict[size].add(filepath)
-            else:
-                filedict[size] = {filepath}
+            filedict[size].add(filepath)
     return filedict
 
 def filesofsamesize(filesbysize: dict[int, set]) -> set[frozenset]:
@@ -91,14 +89,11 @@ class BufferedIOFile():
         return isinstance(other, (Path, BufferedIOFile)) and hash(self) == hash(other)
 
 def comparefiles(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[BufferedIOFile]]:
-    tempdict = {}
+    tempdict = defaultdict(set)
     for file in filestocompare:
         chunk = file.readchunk()
-        if chunk:
-            if chunk in tempdict:
-                tempdict[chunk].add(file)
-            else:
-                tempdict[chunk] = {file}
+        if chunk:    
+            tempdict[chunk].add(file)
         else: #EOF
             raise EOFError 
     possibleduplicates = set(frozenset(files) for chunk, files in tempdict.items())
