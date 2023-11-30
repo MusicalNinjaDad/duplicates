@@ -16,8 +16,8 @@ def _copy(self: Path, target: Path) -> None:
 
 Path.copy = _copy
 
-dir1 = Path('test/majorver/data/dir1')
-dir2 = Path('test/majorver/data/dir2')
+dir1 = Path('test/data/dir1')
+dir2 = Path('test/data/dir2')
 
 @dataclass
 class Testfiles():
@@ -25,7 +25,7 @@ class Testfiles():
     paths: dict[str: Path]
     handles: dict[str: BufferedIOBase]
 
-SourceFileRoot = Path('test/majorver/data/')
+SourceFileRoot = Path('test/data/')
 sourcefiles = Testfiles(
     root = SourceFileRoot,
     paths = {
