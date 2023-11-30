@@ -5,7 +5,19 @@ from dataclasses import dataclass
 from io import BufferedIOBase
 from pathlib import Path
 
-from pytest import fixture, mark, raises
+from pytest import fixture
+
+def pytest_configure(config):
+    marks = [
+        "copyfiles((file, num),(file, num),...): which files to copy",
+        "linkfiles((file, num),(file, num),...): which files to hardlink"
+    ]
+
+    def addmarkers(marks):
+        for mark in marks:
+            config.addinivalue_line("markers", mark)
+
+    addmarkers(marks)
 
 def _copy(self: Path, target: Path) -> None:
     from shutil import copyfile, copytree

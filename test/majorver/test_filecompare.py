@@ -1,6 +1,6 @@
 from recurtools import flatten
 from . import listfiles, filesofsamesize, BufferedIOFile, comparefiles, drophardlinks, finddupes, recursivecompare
-from .testimports import *
+from ..testimports import *
 
 @mark.copyfiles(('fileA',2))
 def test_fileissamesize(copiedtestfiles):

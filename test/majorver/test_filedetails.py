@@ -1,7 +1,7 @@
 from recurtools import flatten
 
 from . import listfiles
-from .testimports import *
+from ..testimports import *
 
 @mark.copyfiles(('fileA',1), ('fileB',1))
 def test_fileslisted(copiedtestfiles):
