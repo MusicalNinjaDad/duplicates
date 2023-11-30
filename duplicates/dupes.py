@@ -2,7 +2,6 @@ from contextlib import ExitStack, contextmanager
 from io import BufferedIOBase
 from pathlib import Path
 
-from recurtools import flatten
 
 def listfiles(in_path: Path) -> dict[int, set]:
     filedict = dict()
