@@ -77,7 +77,6 @@ def test_drophardlinks(copiedtestfiles, filesopen):
         BufferedIOFile(copiedtestfiles.paths['fileA'][2], copiedtestfiles.handles['fileA'][2], chunksize=4) in identicalfiles
     ))
 
-# @mark.xfail
 @mark.copyfiles(('fileA',2), ('fileB', 1), ('fileA2', 1))
 @mark.linkfiles(('fileA',1))
 def test_integrate_list_compare(copiedtestfiles):
