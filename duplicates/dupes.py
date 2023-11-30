@@ -139,6 +139,9 @@ def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
         for size, files in allfiles.items()
         if len(files) > 1
     }
-    with ExitStack() as stack:
-        _ = [stack.enter_context(file.open()) for files in allfiles.values() for file in files]
-    return nohardlinks
+    dupes = set()
+    for fileset in nohardlinks.values():
+        with ExitStack() as stack:
+            _ = [stack.enter_context(file.open()) for file in fileset]
+            dupes |= recursivecompare({frozenset(fileset)})
+    return dupes
