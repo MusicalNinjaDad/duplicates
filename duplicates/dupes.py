@@ -138,6 +138,10 @@ def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
     return dupes
 
 def replacewithlink(keep: Path, replace: Path) -> None:
-    tmplink = Path('_'.join((str(replace), str(uuid1()))))
+    def _extendpath(self: Path, string: str) -> Path:
+        return Path(''.join((str(self),string)))
+    Path.__add__ = _extendpath
+
+    tmplink = replace + '_' + str(uuid1())
     tmplink.hardlink_to(keep)
     os.replace(tmplink, replace)
