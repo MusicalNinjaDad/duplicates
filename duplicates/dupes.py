@@ -3,6 +3,7 @@ from contextlib import ExitStack, contextmanager
 from io import BufferedIOBase
 import os
 from pathlib import Path
+from typing import Any
 from uuid import uuid1
 
 
@@ -138,10 +139,10 @@ def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
     return dupes
 
 def replacewithlink(keep: Path, replace: Path) -> None:
-    def _extendpath(self: Path, string: str) -> Path:
-        return Path(''.join((str(self),string)))
+    def _extendpath(self: Path, string: Any) -> Path:
+        return Path(''.join((str(self),str(string))))
     Path.__add__ = _extendpath
 
-    tmplink = replace + '_' + str(uuid1())
+    tmplink = replace + '_' + uuid1()
     tmplink.hardlink_to(keep)
     os.replace(tmplink, replace)
