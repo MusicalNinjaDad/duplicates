@@ -6,5 +6,6 @@ from .dupes import (
     drophardlinks,
     finddupes,
     recursivecompare,
-    replacewithlink
+    replacewithlink,
+    linkdupes
 )

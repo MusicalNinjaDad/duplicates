@@ -146,3 +146,15 @@ def replacewithlink(keep: Path, replace: Path) -> None:
     tmplink = replace + '_' + uuid1()
     tmplink.hardlink_to(keep)
     os.replace(tmplink, replace)
+
+def linkdupes(rootpath: Path) -> None:
+    dupes = finddupes(rootpath)
+    for setoffiles in dupes:
+        fileiterator = iter(setoffiles)
+        filetokeep = next(fileiterator).path
+        while True:
+            try:
+                filetolink = next(fileiterator).path
+            except StopIteration:
+                break
+            replacewithlink(filetokeep, filetolink)
