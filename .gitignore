@@ -138,8 +138,6 @@ dmypy.json
 cython_debug/
 
 #VSCode
-*.code-workspace
-.vscode/
 .env
 
 secrets
