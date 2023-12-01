@@ -152,9 +152,5 @@ def linkdupes(rootpath: Path) -> None:
     for setoffiles in dupes:
         fileiterator = iter(setoffiles)
         filetokeep = next(fileiterator).path
-        while True:
-            try:
-                filetolink = next(fileiterator).path
-            except StopIteration:
-                break
-            replacewithlink(filetokeep, filetolink)
+        for filetolink in fileiterator:
+            replacewithlink(filetokeep, filetolink.path)
