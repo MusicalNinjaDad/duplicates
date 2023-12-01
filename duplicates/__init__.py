@@ -1,1 +1,10 @@
-from .dupes import listfiles, filesofsamesize, BufferedIOFile, comparefiles, drophardlinks, finddupes, recursivecompare
+from .dupes import (
+    listfiles,
+    filesofsamesize,
+    BufferedIOFile,
+    comparefiles,
+    drophardlinks,
+    finddupes,
+    recursivecompare,
+    replacewithlink
+)

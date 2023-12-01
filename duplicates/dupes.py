@@ -1,7 +1,9 @@
 from collections import defaultdict, deque
 from contextlib import ExitStack, contextmanager
 from io import BufferedIOBase
+import os
 from pathlib import Path
+from uuid import uuid1
 
 
 def listfiles(in_path: Path) -> dict[int, set]:
@@ -134,3 +136,8 @@ def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
             _ = [stack.enter_context(file.open()) for file in fileset]
             dupes |= recursivecompare({frozenset(fileset)})
     return dupes
+
+def replacewithlink(keep: Path, replace: Path) -> None:
+    tmplink = Path('_'.join((str(replace), str(uuid1()))))
+    tmplink.hardlink_to(keep)
+    os.replace(tmplink, replace)
