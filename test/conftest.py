@@ -26,7 +26,12 @@ def _copy(self: Path, target: Path) -> None:
     else:
         copyfile(self, target / self.name) #If later needed can use newname = self.name: str as optional arg
 
+def _copyfrom(self: Path, source: Path) -> None:
+    from shutil import copyfile
+    copyfile(source, self)
+
 Path.copy = _copy
+Path.copyfrom = _copyfrom
 
 @dataclass
 class Testfiles():
@@ -57,16 +62,17 @@ def copiedtestfiles(request, tmp_path) -> Testfiles:
     filestocopy = request.node.get_closest_marker('copyfiles')
     for file in filestocopy.args:
         fileid, numcopies = file
-        for i in range(numcopies):
+        for _ in range(numcopies):
             uniquedir = tmp_path / str(uuid.uuid1())
             uniquedir.mkdir()
-            sourcefiles.paths[fileid].copy(tmp_path / uniquedir)
-            tmp_files.paths[fileid].append(tmp_path / uniquedir / sourcefiles.paths[fileid].name)
+            newfile = tmp_path / uniquedir / sourcefiles.paths[fileid].name
+            newfile.copyfrom(sourcefiles.paths[fileid])
+            tmp_files.paths[fileid].append(newfile)
     filestolink = request.node.get_closest_marker('linkfiles')
     if filestolink:
         for file in filestolink.args:
             fileid, numcopies = file
-            for i in range(numcopies):
+            for _ in range(numcopies):
                 uniquedir = tmp_path / str(uuid.uuid1())
                 uniquedir.mkdir()
                 newfile = tmp_path / uniquedir / sourcefiles.paths[fileid].name
