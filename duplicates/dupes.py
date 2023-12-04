@@ -75,10 +75,18 @@ class BufferedIOFile():
         return isinstance(other, (Path, BufferedIOFile)) and hash(self) == hash(other)
 
 
-def groupby(iterator: Iterable, groupfunction: Callable, onfail: Exception = ValueError) -> set[frozenset]:
+def _sift(iterator: Iterable, siftby: Callable, onfail: Exception = ValueError) -> set[frozenset]:
+    """Sifts an iterator and returns only those sets of values which share a common property
+    - iterator: the iterator to sift
+    - siftby: a Callable which when applied to each item in iterator returns the property to be used for sifting
+    - onfail: the exception type to raise if siftby returns a Falsey result. Default: Value Error
+
+    Returns: A set of frozensets, where all elements of each frozenset share the same property.
+    Only sets with more than one item are returned - unique items are sifted out.
+    """
     tmpdict = defaultdict(set)
     for item in iterator:
-        idx = groupfunction(item)
+        idx = siftby(item)
         if idx: 
             tmpdict[idx].add(item)
         else:
@@ -93,11 +101,11 @@ def filesofsamesize(pathtosearch: Path) -> set[frozenset]:
                 filepath = root / file
                 yield filepath
     
-    dupes = groupby(_filepaths(pathtosearch), lambda p: p.stat().st_size)
+    dupes = _sift(_filepaths(pathtosearch), lambda p: p.stat().st_size)
     return dupes
 
 def comparefiles(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[BufferedIOFile]]:
-    possibleduplicates = groupby(filestocompare, lambda f: f.readchunk(), EOFError)
+    possibleduplicates = _sift(filestocompare, lambda f: f.readchunk(), EOFError)
     return possibleduplicates
 
 
