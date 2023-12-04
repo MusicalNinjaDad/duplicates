@@ -112,14 +112,11 @@ def comparefiles(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[Buf
 def recursivecompare(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
     newsets = set()
     for setoffiles in setstocompare:
-        if len(setoffiles) == 1:
-            pass
-        else: 
-            newsets |= comparefiles(setoffiles)
+        newsets |= comparefiles(setoffiles)
     try:
         return recursivecompare(newsets)
     except EOFError:
-        return set(files for files in newsets if len(files) > 1) #if difference is only in last chunk ... otherwise EOF may be reached before len(setoffiles) == 1 depending on ordering in set
+        return set(files for files in newsets)
     
 def drophardlinks(filestocheck: frozenset[Path]) -> frozenset[Path]:    
     uniqueinos = defaultdict(lambda: deque(maxlen=1))
