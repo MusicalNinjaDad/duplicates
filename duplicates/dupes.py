@@ -6,23 +6,6 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 from uuid import uuid1
 
-def groupby(iterator: Iterable, groupfunction: Callable) -> set[frozenset]:
-    tmpdict = defaultdict(set)
-    for item in iterator:
-        tmpdict[groupfunction(item)].add(item)
-    return {frozenset(group) for group in tmpdict.values() if len(group) > 1}
-
-
-def filesofsamesize(pathtosearch: Path) -> set[frozenset]:
-    def _filepaths(in_path: Path):
-        for root, dirs, files in in_path.walk():
-            for file in files:
-                filepath = root / file
-                yield filepath
-    
-    dupes = groupby(_filepaths(pathtosearch), lambda p: p.stat().st_size)
-    return dupes
-
 class BufferedIOFile():
     """ A File that knows it's Path and is able to provide buffered read in chunks
     """
@@ -91,16 +74,32 @@ class BufferedIOFile():
     def __eq__(self, other: object) -> bool:
         return isinstance(other, (Path, BufferedIOFile)) and hash(self) == hash(other)
 
+
+def groupby(iterator: Iterable, groupfunction: Callable, onfail: Exception = ValueError) -> set[frozenset]:
+    tmpdict = defaultdict(set)
+    for item in iterator:
+        idx = groupfunction(item)
+        if idx: 
+            tmpdict[idx].add(item)
+        else:
+            raise onfail
+    return {frozenset(group) for group in tmpdict.values() if len(group) > 1}
+
+
+def filesofsamesize(pathtosearch: Path) -> set[frozenset]:
+    def _filepaths(in_path: Path):
+        for root, dirs, files in in_path.walk():
+            for file in files:
+                filepath = root / file
+                yield filepath
+    
+    dupes = groupby(_filepaths(pathtosearch), lambda p: p.stat().st_size)
+    return dupes
+
 def comparefiles(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[BufferedIOFile]]:
-    tempdict = defaultdict(set)
-    for file in filestocompare:
-        chunk = file.readchunk()
-        if chunk:    
-            tempdict[chunk].add(file)
-        else: #EOF
-            raise EOFError 
-    possibleduplicates = set(frozenset(files) for chunk, files in tempdict.items())
+    possibleduplicates = groupby(filestocompare, lambda f: f.readchunk(), EOFError)
     return possibleduplicates
+
 
 def recursivecompare(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
     newsets = set()
