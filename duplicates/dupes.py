@@ -3,7 +3,7 @@ from contextlib import ExitStack, contextmanager
 from io import BufferedIOBase
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, Iterable
 from uuid import uuid1
 
 
@@ -16,11 +16,21 @@ def _listfilesbysize(in_path: Path) -> dict[int, set]:
             filedict[size].add(filepath)
     return filedict
 
+def groupby(iterator: Iterable, groupfunction: Callable) -> set[frozenset]:
+    tmpdict = defaultdict(set)
+    for item in iterator:
+        tmpdict[groupfunction(item)].add(item)
+    return {frozenset(group) for group in tmpdict.values() if len(group) > 1}
+
+
 def filesofsamesize(pathtosearch: Path) -> set[frozenset]:
-    dupes = {
-        frozenset(filepath for filepath in files)
-        for size, files in _listfilesbysize(pathtosearch).items() if len(files) > 1
-    }
+    def _filepaths(in_path: Path):
+        for root, dirs, files in in_path.walk():
+            for file in files:
+                filepath = root / file
+                yield filepath
+    
+    dupes = groupby(_filepaths(pathtosearch), lambda p: p.stat().st_size)
     return dupes
 
 class BufferedIOFile():
