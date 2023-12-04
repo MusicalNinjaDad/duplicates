@@ -94,7 +94,7 @@ def _sift(iterator: Iterable, siftby: Callable, onfail: Exception = ValueError) 
     return {frozenset(group) for group in tmpdict.values() if len(group) > 1}
 
 
-def filesofsamesize(pathtosearch: Path) -> set[frozenset]:
+def _filesofsamesize(pathtosearch: Path) -> set[frozenset]:
     def _filepaths(in_path: Path):
         for root, dirs, files in in_path.walk():
             for file in files:
@@ -118,7 +118,7 @@ def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[fr
     except EOFError:
         return set(files for files in newsets)
     
-def drophardlinks(filestocheck: frozenset[Path]) -> frozenset[Path]:    
+def _drophardlinks(filestocheck: frozenset[Path]) -> frozenset[Path]:    
     uniqueinos = defaultdict(lambda: deque(maxlen=1))
     for file in filestocheck:
         id = file.stat().st_ino
@@ -126,8 +126,8 @@ def drophardlinks(filestocheck: frozenset[Path]) -> frozenset[Path]:
     return frozenset(uniqueinos.values())
     
 def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
-    samesizefiles = filesofsamesize(rootpath)
-    nohardlinks = {drophardlinks(files) for files in samesizefiles}
+    samesizefiles = _filesofsamesize(rootpath)
+    nohardlinks = {_drophardlinks(files) for files in samesizefiles}
     dupes = set()
     for fileset in nohardlinks:
         fileobjects = {BufferedIOFile(filepath) for filepath in fileset}
