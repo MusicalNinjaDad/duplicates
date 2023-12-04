@@ -124,28 +124,22 @@ def recursivecompare(setstocompare: set[frozenset[BufferedIOFile]]) -> set[froze
     except EOFError:
         return set(files for files in newsets if len(files) > 1) #if difference is only in last chunk ... otherwise EOF may be reached before len(setoffiles) == 1 depending on ordering in set
     
-def drophardlinks(filestocheck: frozenset[BufferedIOFile]) -> frozenset[BufferedIOFile]:    
+def drophardlinks(filestocheck: frozenset[Path]) -> frozenset[Path]:    
     uniqueinos = defaultdict(lambda: deque(maxlen=1))
     for file in filestocheck:
-        id = file.path.stat().st_ino
+        id = file.stat().st_ino
         uniqueinos[id] = file
     return frozenset(uniqueinos.values())
     
 def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
-    allfiles = {
-        size: {BufferedIOFile(path) for path in setofpaths}
-        for size, setofpaths in _listfilesbysize(rootpath).items()
-        if len(setofpaths) > 1
-    }
-    nohardlinks = {
-        size: drophardlinks(files)
-        for size, files in allfiles.items()
-    }
+    samesizefiles = filesofsamesize(rootpath)
+    nohardlinks = {drophardlinks(files) for files in samesizefiles}
     dupes = set()
-    for fileset in nohardlinks.values():
+    for fileset in nohardlinks:
+        fileobjects = {BufferedIOFile(filepath) for filepath in fileset}
         with ExitStack() as stack:
-            _ = [stack.enter_context(file.open()) for file in fileset]
-            dupes |= recursivecompare({frozenset(fileset)})
+            _ = [stack.enter_context(file.open()) for file in fileobjects]
+            dupes |= recursivecompare({frozenset(fileobjects)})
     return dupes
 
 def replacewithlink(keep: Path, replace: Path) -> None:

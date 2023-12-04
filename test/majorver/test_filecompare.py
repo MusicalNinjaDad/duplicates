@@ -62,17 +62,15 @@ def test_recursivecomparisonignoressingles(copiedtestfiles, filesopen):
 
 @mark.copyfiles(('fileA',2))
 @mark.linkfiles(('fileA',1))
-def test_drophardlinks(copiedtestfiles, filesopen):
-    filestocompare = frozenset(
-        BufferedIOFile(path_handle[0], path_handle[1], chunksize=4) for path_handle in zip(copiedtestfiles.paths['fileA'], copiedtestfiles.handles['fileA'])
-    )
+def test_drophardlinks(copiedtestfiles):
+    filestocompare = frozenset(path for path in copiedtestfiles.paths['fileA'])
     assert len(filestocompare) == 3
     identicalfiles = drophardlinks(filestocompare)
     assert len(identicalfiles) == 2
-    assert BufferedIOFile(copiedtestfiles.paths['fileA'][1], copiedtestfiles.handles['fileA'][1], chunksize=4) in identicalfiles
+    assert copiedtestfiles.paths['fileA'][1] in identicalfiles
     assert any((
-        BufferedIOFile(copiedtestfiles.paths['fileA'][0], copiedtestfiles.handles['fileA'][0], chunksize=4) in identicalfiles,
-        BufferedIOFile(copiedtestfiles.paths['fileA'][2], copiedtestfiles.handles['fileA'][2], chunksize=4) in identicalfiles
+        copiedtestfiles.paths['fileA'][0] in identicalfiles,
+        copiedtestfiles.paths['fileA'][2] in identicalfiles
     ))
 
 @mark.copyfiles(('fileA',2), ('fileB', 1), ('fileA2', 1))
