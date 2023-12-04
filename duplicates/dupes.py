@@ -7,7 +7,7 @@ from typing import Any
 from uuid import uuid1
 
 
-def listfiles(in_path: Path) -> dict[int, set]:
+def _listfiles(in_path: Path) -> dict[int, set]:
     filedict = defaultdict(set)
     for root, dirs, files in in_path.walk():
         for file in files:
@@ -16,10 +16,10 @@ def listfiles(in_path: Path) -> dict[int, set]:
             filedict[size].add(filepath)
     return filedict
 
-def filesofsamesize(filesbysize: dict[int, set]) -> set[frozenset]:
+def filesofsamesize(pathtosearch: Path) -> set[frozenset]:
     dupes = {
         frozenset(filepath for filepath in files)
-        for size, files in filesbysize.items() if len(files) > 1
+        for size, files in _listfiles(pathtosearch).items() if len(files) > 1
     }
     return dupes
 
@@ -124,7 +124,7 @@ def drophardlinks(filestocheck: frozenset[BufferedIOFile]) -> frozenset[Buffered
 def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
     allfiles = {
         size: {BufferedIOFile(path) for path in setofpaths}
-        for size, setofpaths in listfiles(rootpath).items()
+        for size, setofpaths in _listfiles(rootpath).items()
         if len(setofpaths) > 1
     }
     nohardlinks = {
