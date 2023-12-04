@@ -1,4 +1,5 @@
-from . import filesofsamesize, BufferedIOFile, comparefiles, drophardlinks, finddupes, recursivecompare
+from . import filesofsamesize, BufferedIOFile, drophardlinks, finddupes, recursivecompare
+from ...duplicates.dupes import _comparefilechunk
 from ..testimports import *
 
 @mark.copyfiles(('fileA',2))
@@ -11,7 +12,7 @@ def test_samefilecontentsfirstchunk(copiedtestfiles, filesopen):
     filestocompare = frozenset(
         BufferedIOFile(path_handle[0], path_handle[1], chunksize=4) for path_handle in zip(copiedtestfiles.paths['fileA'], copiedtestfiles.handles['fileA'])
     )
-    identicalfiles = comparefiles(filestocompare)
+    identicalfiles = _comparefilechunk(filestocompare)
     assert identicalfiles == {filestocompare}
 
 @mark.copyfiles(('fileA',2))
@@ -22,7 +23,7 @@ def test_samefilecontentsstopsatEOF(copiedtestfiles, filesopen):
     chunkcount = 0
     while True:
         try:
-            identicalfiles = comparefiles(filestocompare)
+            identicalfiles = _comparefilechunk(filestocompare)
         except EOFError:
             break
         else:

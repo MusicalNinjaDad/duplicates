@@ -104,7 +104,7 @@ def filesofsamesize(pathtosearch: Path) -> set[frozenset]:
     dupes = _sift(_filepaths(pathtosearch), lambda p: p.stat().st_size)
     return dupes
 
-def comparefiles(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[BufferedIOFile]]:
+def _comparefilechunk(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[BufferedIOFile]]:
     possibleduplicates = _sift(filestocompare, lambda f: f.readchunk(), EOFError)
     return possibleduplicates
 
@@ -112,7 +112,7 @@ def comparefiles(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[Buf
 def recursivecompare(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
     newsets = set()
     for setoffiles in setstocompare:
-        newsets |= comparefiles(setoffiles)
+        newsets |= _comparefilechunk(setoffiles)
     try:
         return recursivecompare(newsets)
     except EOFError:
