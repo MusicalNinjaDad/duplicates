@@ -6,16 +6,6 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 from uuid import uuid1
 
-
-def _listfilesbysize(in_path: Path) -> dict[int, set]:
-    filedict = defaultdict(set)
-    for root, dirs, files in in_path.walk():
-        for file in files:
-            filepath = root / file
-            size = filepath.stat().st_size
-            filedict[size].add(filepath)
-    return filedict
-
 def groupby(iterator: Iterable, groupfunction: Callable) -> set[frozenset]:
     tmpdict = defaultdict(set)
     for item in iterator:
