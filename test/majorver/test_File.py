@@ -1,7 +1,6 @@
 from pathlib import Path
 
-from . import BufferedIOFile
-from ..testimports import *
+from . import *
 
 @mark.copyfiles(('fileA',1))
 def test_initialisation(copiedtestfiles, filesopen):

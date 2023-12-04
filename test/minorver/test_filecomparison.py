@@ -1,6 +1,5 @@
 from . import *
 from ...duplicates.dupes import _comparefilechunk, _drophardlinks, _filesofsamesize
-from ..testimports import *
 
 @mark.copyfiles(('fileA',2))
 def test_fileissamesize(copiedtestfiles):

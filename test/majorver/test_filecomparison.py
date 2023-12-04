@@ -1,5 +1,4 @@
-from . import BufferedIOFile, finddupes, comparefilecontents
-from ..testimports import *
+from . import *
 
 @mark.copyfiles(('fileA',2), ('fileA2',3))
 def test_recursivecomparison(copiedtestfiles, filesopen):
