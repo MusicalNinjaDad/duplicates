@@ -1,4 +1,4 @@
-from . import filesofsamesize, BufferedIOFile, drophardlinks, finddupes, recursivecompare
+from . import filesofsamesize, BufferedIOFile, drophardlinks, finddupes, comparefilecontents
 from ...duplicates.dupes import _comparefilechunk
 from ..testimports import *
 
@@ -40,7 +40,7 @@ def test_recursivecomparison(copiedtestfiles, filesopen):
     filestocompare = {frozenset(
         BufferedIOFile(path_handle[0], path_handle[1], chunksize = 4) for path_handle in pathsandhandles
     )}
-    identicalfiles = recursivecompare(filestocompare)
+    identicalfiles = comparefilecontents(filestocompare)
     assert identicalfiles == {
         frozenset(BufferedIOFile(path, chunksize = 4) for path in copiedtestfiles.paths['fileA']),
         frozenset(BufferedIOFile(path, chunksize = 4) for path in copiedtestfiles.paths['fileA2'])
@@ -55,7 +55,7 @@ def test_recursivecomparisonignoressingles(copiedtestfiles, filesopen):
     filestocompare = {frozenset(
         BufferedIOFile(path_handle[0], path_handle[1], chunksize = 4) for path_handle in pathsandhandles
     )}
-    identicalfiles = recursivecompare(filestocompare)
+    identicalfiles = comparefilecontents(filestocompare)
     assert identicalfiles == {
         frozenset(BufferedIOFile(path, chunksize = 4) for path in copiedtestfiles.paths['fileA']),
         frozenset(BufferedIOFile(path, chunksize = 4) for path in copiedtestfiles.paths['fileB'])

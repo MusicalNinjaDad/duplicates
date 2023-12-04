@@ -109,12 +109,12 @@ def _comparefilechunk(filestocompare: frozenset[BufferedIOFile]) -> set[frozense
     return possibleduplicates
 
 
-def recursivecompare(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
+def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
     newsets = set()
     for setoffiles in setstocompare:
         newsets |= _comparefilechunk(setoffiles)
     try:
-        return recursivecompare(newsets)
+        return comparefilecontents(newsets)
     except EOFError:
         return set(files for files in newsets)
     
@@ -133,7 +133,7 @@ def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
         fileobjects = {BufferedIOFile(filepath) for filepath in fileset}
         with ExitStack() as stack:
             _ = [stack.enter_context(file.open()) for file in fileobjects]
-            dupes |= recursivecompare({frozenset(fileobjects)})
+            dupes |= comparefilecontents({frozenset(fileobjects)})
     return dupes
 
 def replacewithlink(keep: Path, replace: Path) -> None:
