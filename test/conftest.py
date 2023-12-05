@@ -46,7 +46,8 @@ sourcefiles = Testfiles(
         'fileA': SourceFileRoot / 'dir1' / 'fileA.txt',
         'fileB': SourceFileRoot / 'dir2' / 'fileB.txt',
         'fileA2': SourceFileRoot / 'dir3' / 'fileA2.txt',
-        'fileB2': SourceFileRoot / 'dir3' / 'fileB2.txt'
+        'fileB2': SourceFileRoot / 'dir3' / 'fileB2.txt',
+        'fileA-copy': SourceFileRoot / 'dir3' / 'fileA-copy.txt'
     },
     handles = {}
 )
