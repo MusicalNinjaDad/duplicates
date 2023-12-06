@@ -17,7 +17,7 @@ def linkdupes(rootpath: Path) -> None:
 
 def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
     samesizefiles = _filesofsamesize(rootpath)
-    nohardlinks = {_drophardlinks(files) for files in samesizefiles}
+    nohardlinks = {_drophardlinks(files)[0] for files in samesizefiles}
     dupes = set()
     for fileset in nohardlinks:
         fileobjects = {BufferedIOFile(filepath) for filepath in fileset}
@@ -77,8 +77,8 @@ def _comparefilechunk(filestocompare: frozenset[BufferedIOFile]) -> set[frozense
     return possibleduplicates
     
 def _drophardlinks(filestocheck: frozenset[Path]) -> frozenset[Path]:    
-    uniqueinos = defaultdict(lambda: deque(maxlen=1))
+    uniqueinos = defaultdict(set)
     for file in filestocheck:
         id = file.stat().st_ino
-        uniqueinos[id] = file
-    return frozenset(uniqueinos.values())
+        uniqueinos[id].add(file)
+    return frozenset(next(iter(files)) for files in uniqueinos.values()), uniqueinos
