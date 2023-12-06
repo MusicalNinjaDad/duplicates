@@ -1,4 +1,4 @@
-from collections import defaultdict, deque
+from collections import defaultdict
 from contextlib import ExitStack
 import os
 from pathlib import Path
