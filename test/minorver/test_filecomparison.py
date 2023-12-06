@@ -1,5 +1,5 @@
 from . import *
-from ...duplicates.dupes import _comparefilechunk, _drophardlinks, _filesofsamesize
+from ...duplicates.dupes import _comparefilechunk, _indexbyino, _filesofsamesize
 
 @mark.copyfiles(('fileA',2))
 def test_fileissamesize(copiedtestfiles):
@@ -32,15 +32,10 @@ def test_samefilecontentsstopsatEOF(copiedtestfiles, filesopen):
 
 @mark.copyfiles(('fileA',2))
 @mark.linkfiles(('fileA',1))
-def test_drophardlinks(copiedtestfiles):
+def test_indexbyino(copiedtestfiles):
     filestocompare = frozenset(path for path in copiedtestfiles.paths['fileA'])
     assert len(filestocompare) == 3
-    identicalfiles, inoindex = _drophardlinks(filestocompare)
-    assert len(identicalfiles) == 2
-    assert copiedtestfiles.paths['fileA'][1] in identicalfiles
-    assert any((
-        copiedtestfiles.paths['fileA'][0] in identicalfiles,
-        copiedtestfiles.paths['fileA'][2] in identicalfiles
-    ))
+    inoindex = _indexbyino(filestocompare)
+    assert len(inoindex) == 2
     assert {copiedtestfiles.paths['fileA'][0], copiedtestfiles.paths['fileA'][2]} in inoindex.values()
     assert {copiedtestfiles.paths['fileA'][1]} in inoindex.values()
