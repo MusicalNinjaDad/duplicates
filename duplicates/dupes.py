@@ -34,6 +34,15 @@ class DuplicateFiles:
     def refreshinos(self):
         #if stale inos are ever going to be an issue this is probably how best to resolve
         raise NotImplementedError
+    
+    def link(self) -> None:
+        for setoffiles in self.duplicates:
+            fileiterator = iter(setoffiles)
+            filetokeep = next(fileiterator).path
+            for mainfiletolink in fileiterator:
+                inotolink = self._inoindex[mainfiletolink.path.stat().st_ino]
+                for filetolink in inotolink:
+                    _replacewithlink(filetokeep, filetolink)
 
 def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
     newsets = set()
@@ -43,19 +52,6 @@ def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[fr
         return comparefilecontents(newsets)
     except EOFError:
         return set(files for files in newsets)
-
-
-def linkdupes(rootpath: Path) -> None:
-    dupes = DuplicateFiles.frompath(rootpath)
-    allpossibledupes = _filesofsamesize(rootpath)
-    inoindex = _indexbyino({file for samesizeset in allpossibledupes for file in samesizeset})
-    for setoffiles in dupes.duplicates:
-        fileiterator = iter(setoffiles)
-        filetokeep = next(fileiterator).path
-        for mainfiletolink in fileiterator:
-            inotolink = inoindex[mainfiletolink.path.stat().st_ino]
-            for filetolink in inotolink:
-                _replacewithlink(filetokeep, filetolink)
 
 def _replacewithlink(keep: Path, replace: Path) -> None:
     def _extendpath(self: Path, string: Any) -> Path:

@@ -2,7 +2,8 @@ from . import *
 
 @mark.copyfiles(('fileA',2),('fileB',3))
 def test_findandreplacecopywithlinks(copiedtestfiles):
-    linkdupes(copiedtestfiles.root)
+    dupes = DuplicateFiles.frompath(copiedtestfiles.root)
+    dupes.link()
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
     fileBino = copiedtestfiles.paths['fileB'][0].stat().st_ino
     assert all(
@@ -16,7 +17,8 @@ def test_findandreplacecopywithlinks(copiedtestfiles):
 @mark.copyfiles(('fileA', 2), ('fileA-copy', 2))
 @mark.linkfiles(('fileA', 2), ('fileA-copy', 2))
 def test_linkwhenlinksalreadyexist(copiedtestfiles):
-    linkdupes(copiedtestfiles.root)
+    dupes = DuplicateFiles.frompath(copiedtestfiles.root)
+    dupes.link()
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
     inoscorrect = {(fileid, i): file.stat().st_ino == fileAino for fileid in ('fileA', 'fileA-copy') for i, file in enumerate(copiedtestfiles.paths[fileid])}
     assert all(
