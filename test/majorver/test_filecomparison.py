@@ -32,7 +32,7 @@ def test_recursivecomparisonignoressingles(copiedtestfiles, filesopen):
 
 @mark.copyfiles(('fileA',2), ('fileB', 1), ('fileA2', 1))
 @mark.linkfiles(('fileA',1))
-def test_finddupes(copiedtestfiles):
+def test_instantiatefrompath(copiedtestfiles):
     duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
     assert any((
         duplicatefiles.duplicates == {frozenset((
