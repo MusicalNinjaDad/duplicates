@@ -1,6 +1,5 @@
 from . import *
 
-@mark.xfail(reason = 'Not Implemented')
 @mark.copyfiles(('fileA',2), ('fileB', 1), ('fileA2', 1))
 @mark.linkfiles(('fileA',1))
 def test_inoindex(copiedtestfiles):

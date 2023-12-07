@@ -11,6 +11,8 @@ class DuplicateFiles:
 
     def __init__(self, duplicates: set[frozenset[BufferedIOFile]], inoindex: dict[int: frozenset[Path]]) -> None:
         self.duplicates = duplicates
+        self._inoindex = inoindex
+
 
     @classmethod
     def comparefilecontents(cls, setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
@@ -26,6 +28,7 @@ class DuplicateFiles:
     def frompath(cls, rootpath: Path):
         samesizefiles = _filesofsamesize(rootpath)
         dupes = set()
+        fullinoindex = _indexbyino({file for samesizeset in samesizefiles for file in samesizeset})
         for fileset in samesizefiles:
             inoindex = _indexbyino(fileset)
             nohardlinks = frozenset(next(iter(files)) for files in inoindex.values())
@@ -33,12 +36,12 @@ class DuplicateFiles:
             with ExitStack() as stack:
                 _ = [stack.enter_context(file.open()) for file in fileobjects]
                 dupes |= DuplicateFiles.comparefilecontents({frozenset(fileobjects)})
-        return DuplicateFiles(duplicates=dupes, inoindex=None)
+        return DuplicateFiles(duplicates=dupes, inoindex=fullinoindex)
 
 def linkdupes(rootpath: Path) -> None:
     dupes = finddupes(rootpath)
     allpossibledupes = _filesofsamesize(rootpath)
-    inoindex = _indexbyino({file for samesizeset in allpossibledupes for file in samesizeset })
+    inoindex = _indexbyino({file for samesizeset in allpossibledupes for file in samesizeset})
     for setoffiles in dupes:
         fileiterator = iter(setoffiles)
         filetokeep = next(fileiterator).path
