@@ -33,19 +33,19 @@ def test_recursivecomparisonignoressingles(copiedtestfiles, filesopen):
 @mark.copyfiles(('fileA',2), ('fileB', 1), ('fileA2', 1))
 @mark.linkfiles(('fileA',1))
 def test_finddupes(copiedtestfiles):
-    duplicatefiles = finddupes(copiedtestfiles.root)    
+    duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
     assert any((
-        duplicatefiles == {frozenset((
+        duplicatefiles.duplicates == {frozenset((
                                 BufferedIOFile(copiedtestfiles.paths['fileA'][1], chunksize=4),
                                 BufferedIOFile(copiedtestfiles.paths['fileA'][0], chunksize=4)
                                 ))
                             },
-        duplicatefiles == {frozenset((
+        duplicatefiles.duplicates == {frozenset((
                                 BufferedIOFile(copiedtestfiles.paths['fileA'][1], chunksize=4),
                                 BufferedIOFile(copiedtestfiles.paths['fileA'][2], chunksize=4)
                                 ))
                             }
-    )), f'Following files identified as duplicates: {duplicatefiles}'
+    )), f'Following files identified as duplicates: {duplicatefiles.duplicates}'
 
 @mark.copyfiles(('fileA',2), ('fileA2',1), ('fileB', 4))
 def test_finddupesemutlipledupes(copiedtestfiles):

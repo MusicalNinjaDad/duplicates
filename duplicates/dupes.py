@@ -8,6 +8,10 @@ from uuid import uuid1
 from .bufferediofile import BufferedIOFile
 
 class DuplicateFiles:
+
+    def __init__(self, duplicates: set[frozenset[BufferedIOFile]]) -> None:
+        self.duplicates = duplicates
+
     @classmethod
     def comparefilecontents(cls, setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
         newsets = set()
@@ -17,6 +21,19 @@ class DuplicateFiles:
             return cls.comparefilecontents(newsets)
         except EOFError:
             return set(files for files in newsets)
+
+    @classmethod
+    def frompath(cls, rootpath: Path):
+        samesizefiles = _filesofsamesize(rootpath)
+        dupes = set()
+        for fileset in samesizefiles:
+            inoindex = _indexbyino(fileset)
+            nohardlinks = frozenset(next(iter(files)) for files in inoindex.values())
+            fileobjects = {BufferedIOFile(filepath) for filepath in nohardlinks}
+            with ExitStack() as stack:
+                _ = [stack.enter_context(file.open()) for file in fileobjects]
+                dupes |= DuplicateFiles.comparefilecontents({frozenset(fileobjects)})
+        return DuplicateFiles(dupes)
 
 def linkdupes(rootpath: Path) -> None:
     dupes = finddupes(rootpath)
