@@ -107,7 +107,7 @@ def _comparefilechunk(filestocompare: frozenset[BufferedIOFile]) -> set[frozense
     possibleduplicates = _sift(filestocompare, lambda f: f.readchunk(), EOFError)
     return possibleduplicates
     
-def _indexbyino(filestoindex: frozenset[Path]) -> frozenset[Path]:    
+def _indexbyino(filestoindex: frozenset[Path]) -> dict[int: set[Path]]:    
     uniqueinos = defaultdict(set)
     for file in filestoindex:
         id = file.stat().st_ino
