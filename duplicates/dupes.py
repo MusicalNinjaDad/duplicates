@@ -63,7 +63,14 @@ def _sift(iterator: Iterable, siftby: Callable, onfail: Exception = ValueError) 
             raise onfail
     return {frozenset(group) for group in tmpdict.values() if len(group) > 1}
 
-def _filesofsamesize(pathtosearch: Path) -> set[frozenset]:
+def _filesofsamesize(pathtosearch: Path) -> set[frozenset[Path]]:
+    """ Walks through all files in a path recursively and identifies those files which all have the same size.
+    
+    - pathtosearch: a Pathlib path to search recursively
+
+    Returns a set of frozensets of Paths, where all items in each frozen set have the same size. Only returns groups which
+    contain multiple files.
+    """
     def _filepaths(in_path: Path):
         for root, dirs, files in in_path.walk():
             for file in files:
