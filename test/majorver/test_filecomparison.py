@@ -49,8 +49,8 @@ def test_instantiatefrompath(copiedtestfiles):
 
 @mark.copyfiles(('fileA',2), ('fileA2',1), ('fileB', 4))
 def test_finddupesemutlipledupes(copiedtestfiles):
-    identicalfiles = finddupes(copiedtestfiles.root)
-    assert identicalfiles == {
+    identicalfiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    assert identicalfiles.duplicates == {
         frozenset(BufferedIOFile(path, chunksize = 4) for path in copiedtestfiles.paths['fileA']),
         frozenset(BufferedIOFile(path, chunksize = 4) for path in copiedtestfiles.paths['fileB'])
     }

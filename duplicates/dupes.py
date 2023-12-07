@@ -48,28 +48,16 @@ class DuplicateFiles:
         return DuplicateFiles(duplicates=dupes, inoindex=fullinoindex)
 
 def linkdupes(rootpath: Path) -> None:
-    dupes = finddupes(rootpath)
+    dupes = DuplicateFiles.frompath(rootpath)
     allpossibledupes = _filesofsamesize(rootpath)
     inoindex = _indexbyino({file for samesizeset in allpossibledupes for file in samesizeset})
-    for setoffiles in dupes:
+    for setoffiles in dupes.duplicates:
         fileiterator = iter(setoffiles)
         filetokeep = next(fileiterator).path
         for mainfiletolink in fileiterator:
             inotolink = inoindex[mainfiletolink.path.stat().st_ino]
             for filetolink in inotolink:
                 replacewithlink(filetokeep, filetolink)
-
-def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
-    samesizefiles = _filesofsamesize(rootpath)
-    dupes = set()
-    for fileset in samesizefiles:
-        inoindex = _indexbyino(fileset)
-        nohardlinks = frozenset(next(iter(files)) for files in inoindex.values())
-        fileobjects = {BufferedIOFile(filepath) for filepath in nohardlinks}
-        with ExitStack() as stack:
-            _ = [stack.enter_context(file.open()) for file in fileobjects]
-            dupes |= DuplicateFiles.comparefilecontents({frozenset(fileobjects)})
-    return dupes
 
 def replacewithlink(keep: Path, replace: Path) -> None:
     def _extendpath(self: Path, string: Any) -> Path:
