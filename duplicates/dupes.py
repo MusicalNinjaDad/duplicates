@@ -7,6 +7,17 @@ from uuid import uuid1
 
 from .bufferediofile import BufferedIOFile
 
+class DuplicateFiles:
+    @classmethod
+    def comparefilecontents(cls, setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
+        newsets = set()
+        for setoffiles in setstocompare:
+            newsets |= _comparefilechunk(setoffiles)
+        try:
+            return cls.comparefilecontents(newsets)
+        except EOFError:
+            return set(files for files in newsets)
+
 def linkdupes(rootpath: Path) -> None:
     dupes = finddupes(rootpath)
     allpossibledupes = _filesofsamesize(rootpath)
@@ -28,7 +39,7 @@ def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
         fileobjects = {BufferedIOFile(filepath) for filepath in nohardlinks}
         with ExitStack() as stack:
             _ = [stack.enter_context(file.open()) for file in fileobjects]
-            dupes |= comparefilecontents({frozenset(fileobjects)})
+            dupes |= DuplicateFiles.comparefilecontents({frozenset(fileobjects)})
     return dupes
 
 def replacewithlink(keep: Path, replace: Path) -> None:
@@ -39,15 +50,6 @@ def replacewithlink(keep: Path, replace: Path) -> None:
     tmplink = replace + '_' + uuid1()
     tmplink.hardlink_to(keep)
     os.replace(tmplink, replace)
-
-def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
-    newsets = set()
-    for setoffiles in setstocompare:
-        newsets |= _comparefilechunk(setoffiles)
-    try:
-        return comparefilecontents(newsets)
-    except EOFError:
-        return set(files for files in newsets)
 
 def _sift(iterator: Iterable, siftby: Callable, onfail: Exception = ValueError) -> set[frozenset]:
     """Sifts an iterator and returns only those sets of values which share a common property
