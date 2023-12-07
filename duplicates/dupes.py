@@ -13,7 +13,7 @@ class DuplicateFiles:
     def frompath(cls, rootpath: Path):
         samesizefiles = _filesofsamesize(rootpath)
         dupes = set()
-        fullinoindex = _indexbyino({file for samesizeset in samesizefiles for file in samesizeset})
+        fullinoindex = _indexbyino(file for samesizeset in samesizefiles for file in samesizeset)
         uniqueinos = frozenset(next(iter(files)) for files in fullinoindex.values())
         for fileset in samesizefiles:
             nohardlinks = fileset & uniqueinos
@@ -101,7 +101,7 @@ def _comparefilechunk(filestocompare: frozenset[BufferedIOFile]) -> set[frozense
     possibleduplicates = _sift(filestocompare, lambda f: f.readchunk(), EOFError)
     return possibleduplicates
     
-def _indexbyino(filestoindex: frozenset[Path]) -> dict[int: set[Path]]:    
+def _indexbyino(filestoindex: Iterable[Path]) -> dict[int: set[Path]]:    
     uniqueinos = defaultdict(set)
     for file in filestoindex:
         id = file.stat().st_ino
