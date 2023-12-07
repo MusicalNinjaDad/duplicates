@@ -12,16 +12,11 @@ class DuplicateFiles:
     def __init__(self, duplicates: set[frozenset[BufferedIOFile]], inoindex: dict[int: frozenset[Path]]) -> None:
         self.duplicates = duplicates
         self.__inoindex = inoindex
-        self.__uniqueinos = frozenset(next(iter(files)) for files in self.__inoindex.values()) 
 
     @property
     def _inoindex(self):
         return self.__inoindex
     
-    @property
-    def _uniqueinos(self):
-        return self.__uniqueinos
-
     def refreshinos(self):
         #if stale inos are ever going to be an issue this is probably how best to resolve
         raise NotImplementedError
@@ -43,9 +38,9 @@ class DuplicateFiles:
         samesizefiles = _filesofsamesize(rootpath)
         dupes = set()
         fullinoindex = _indexbyino({file for samesizeset in samesizefiles for file in samesizeset})
+        uniqueinos = frozenset(next(iter(files)) for files in fullinoindex.values())
         for fileset in samesizefiles:
-            inoindex = _indexbyino(fileset)
-            nohardlinks = frozenset(next(iter(files)) for files in inoindex.values())
+            nohardlinks = fileset & uniqueinos
             fileobjects = {BufferedIOFile(filepath) for filepath in nohardlinks}
             with ExitStack() as stack:
                 _ = [stack.enter_context(file.open()) for file in fileobjects]

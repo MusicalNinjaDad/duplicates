@@ -19,26 +19,3 @@ def test_inoindex(copiedtestfiles):
             copiedtestfiles.paths['fileA2'][0]
         })
     }
-
-@mark.copyfiles(('fileA',2), ('fileB', 1), ('fileA2', 1))
-@mark.linkfiles(('fileA',1))
-def test_uniqueinos(copiedtestfiles):
-    duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
-    assert all(
-        path in duplicatefiles._uniqueinos
-        for path in (
-            copiedtestfiles.paths['fileA'][1],
-            copiedtestfiles.paths['fileA2'][0])
-        )
-    assert any(
-        path in duplicatefiles._uniqueinos
-        for path in (
-            copiedtestfiles.paths['fileA'][0],
-            copiedtestfiles.paths['fileA'][2])
-        )
-    assert not all(
-        path in duplicatefiles._uniqueinos
-        for path in (
-            copiedtestfiles.paths['fileA'][0],
-            copiedtestfiles.paths['fileA'][2])
-        )
