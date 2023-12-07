@@ -22,17 +22,6 @@ class DuplicateFiles:
         raise NotImplementedError
     
 
-
-    @classmethod
-    def comparefilecontents(cls, setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
-        newsets = set()
-        for setoffiles in setstocompare:
-            newsets |= _comparefilechunk(setoffiles)
-        try:
-            return cls.comparefilecontents(newsets)
-        except EOFError:
-            return set(files for files in newsets)
-
     @classmethod
     def frompath(cls, rootpath: Path):
         samesizefiles = _filesofsamesize(rootpath)
@@ -44,8 +33,18 @@ class DuplicateFiles:
             fileobjects = {BufferedIOFile(filepath) for filepath in nohardlinks}
             with ExitStack() as stack:
                 _ = [stack.enter_context(file.open()) for file in fileobjects]
-                dupes |= DuplicateFiles.comparefilecontents({frozenset(fileobjects)})
+                dupes |= comparefilecontents({frozenset(fileobjects)})
         return DuplicateFiles(duplicates=dupes, inoindex=fullinoindex)
+
+def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
+    newsets = set()
+    for setoffiles in setstocompare:
+        newsets |= _comparefilechunk(setoffiles)
+    try:
+        return comparefilecontents(newsets)
+    except EOFError:
+        return set(files for files in newsets)
+
 
 def linkdupes(rootpath: Path) -> None:
     dupes = DuplicateFiles.frompath(rootpath)
