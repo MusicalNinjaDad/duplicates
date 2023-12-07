@@ -1,7 +1,7 @@
 from . import *
 
 @mark.copyfiles(('fileA',2),('fileB',3))
-def test_findandreplacecopywithlinks(copiedtestfiles):
+def test_link(copiedtestfiles):
     dupes = DuplicateFiles.frompath(copiedtestfiles.root)
     dupes.link()
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
@@ -16,7 +16,9 @@ def test_findandreplacecopywithlinks(copiedtestfiles):
 
 @mark.copyfiles(('fileA', 2), ('fileA-copy', 2))
 @mark.linkfiles(('fileA', 2), ('fileA-copy', 2))
-def test_linkwhenlinksalreadyexist(copiedtestfiles):
+def test_link_duplicatefileswithmultiplegroupsoflinks(copiedtestfiles):
+    """fileA and fileA-copy are identical and BOTH have multiple copies AND multiple hardlinks
+    """
     dupes = DuplicateFiles.frompath(copiedtestfiles.root)
     dupes.link()
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino

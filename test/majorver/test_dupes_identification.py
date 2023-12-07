@@ -1,7 +1,7 @@
 from . import *
 
 @mark.copyfiles(('fileA',2), ('fileA2',3))
-def test_recursivecomparison(copiedtestfiles, filesopen):
+def test_comparefilecontents(copiedtestfiles, filesopen):
     pathsandhandles = zip(
         (copiedtestfiles.paths['fileA'] + copiedtestfiles.paths['fileA2']),
         (copiedtestfiles.handles['fileA'] + copiedtestfiles.handles['fileA2'])
@@ -16,7 +16,7 @@ def test_recursivecomparison(copiedtestfiles, filesopen):
     }
 
 @mark.copyfiles(('fileA',2), ('fileA2',1), ('fileB', 4))
-def test_recursivecomparisonignoressingles(copiedtestfiles, filesopen):
+def test_comparefilecontents_filehasnoduplicate(copiedtestfiles, filesopen):
     pathsandhandles = zip(
         (copiedtestfiles.paths['fileA'] + copiedtestfiles.paths['fileA2'] + copiedtestfiles.paths['fileB']),
         (copiedtestfiles.handles['fileA'] + copiedtestfiles.handles['fileA2'] + copiedtestfiles.handles['fileB'])
@@ -48,7 +48,7 @@ def test_instantiatefrompath(copiedtestfiles):
     )), f'Following files identified as duplicates: {duplicatefiles.duplicates}'
 
 @mark.copyfiles(('fileA',2), ('fileA2',1), ('fileB', 4))
-def test_finddupesemutlipledupes(copiedtestfiles):
+def test_instantiatefrompath_multipleduplicatefiles(copiedtestfiles):
     identicalfiles = DuplicateFiles.frompath(copiedtestfiles.root)
     assert identicalfiles.duplicates == {
         frozenset(BufferedIOFile(path, chunksize = 4) for path in copiedtestfiles.paths['fileA']),
