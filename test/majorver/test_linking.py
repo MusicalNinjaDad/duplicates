@@ -19,7 +19,6 @@ def test_findandreplacecopywithlinks(copiedtestfiles):
     )
 
 
-@mark.xfail #Not Implemented
 @mark.copyfiles(('fileA', 2), ('fileA-copy', 2))
 @mark.linkfiles(('fileA', 2), ('fileA-copy', 2))
 def test_linkwhenlinksalreadyexist(copiedtestfiles):

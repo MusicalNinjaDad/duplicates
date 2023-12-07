@@ -9,11 +9,15 @@ from .bufferediofile import BufferedIOFile
 
 def linkdupes(rootpath: Path) -> None:
     dupes = finddupes(rootpath)
+    allpossibledupes = _filesofsamesize(rootpath)
+    inoindex = _indexbyino({file for samesizeset in allpossibledupes for file in samesizeset })
     for setoffiles in dupes:
         fileiterator = iter(setoffiles)
         filetokeep = next(fileiterator).path
-        for filetolink in fileiterator:
-            replacewithlink(filetokeep, filetolink.path)
+        for mainfiletolink in fileiterator:
+            inotolink = inoindex[mainfiletolink.path.stat().st_ino]
+            for filetolink in inotolink:
+                replacewithlink(filetokeep, filetolink)
 
 def finddupes(rootpath: Path) -> set[frozenset[BufferedIOFile]]:
     samesizefiles = _filesofsamesize(rootpath)
