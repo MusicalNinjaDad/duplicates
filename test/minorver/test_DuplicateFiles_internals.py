@@ -7,16 +7,16 @@ def test_inoindex(copiedtestfiles):
     duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
     assert duplicatefiles._inoindex == {
         copiedtestfiles.paths['fileA'][0].stat().st_ino: frozenset({
-            BufferedIOFile(copiedtestfiles['fileA'][0]),
-            BufferedIOFile(copiedtestfiles['fileA'][2])
+            copiedtestfiles['fileA'][0].path,
+            copiedtestfiles['fileA'][2].path
         }),
         copiedtestfiles.paths['fileA'][1].stat().st_ino: frozenset({
-            BufferedIOFile(copiedtestfiles.paths['fileA'][1])
+            copiedtestfiles.paths['fileA'][1].path
         }),
         # copiedtestfiles.paths['fileB'][0].stat().st_ino: frozenset({
-        #     BufferedIOFile(copiedtestfiles.paths['fileB'][0])
+        #     copiedtestfiles.paths['fileB'][0].path
         # }), -- Not in index as only file of this size => cannot be a duplicate
         copiedtestfiles.paths['fileA2'][0].stat().st_ino: frozenset({
-            BufferedIOFile(copiedtestfiles.paths['fileA2'][0])
+            copiedtestfiles.paths['fileA2'][0].path
         })
     }

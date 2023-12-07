@@ -9,7 +9,7 @@ from .bufferediofile import BufferedIOFile
 
 class DuplicateFiles:
 
-    def __init__(self, duplicates: set[frozenset[BufferedIOFile]]) -> None:
+    def __init__(self, duplicates: set[frozenset[BufferedIOFile]], inoindex: dict[int: frozenset[Path]]) -> None:
         self.duplicates = duplicates
 
     @classmethod
@@ -33,7 +33,7 @@ class DuplicateFiles:
             with ExitStack() as stack:
                 _ = [stack.enter_context(file.open()) for file in fileobjects]
                 dupes |= DuplicateFiles.comparefilecontents({frozenset(fileobjects)})
-        return DuplicateFiles(dupes)
+        return DuplicateFiles(duplicates=dupes, inoindex=None)
 
 def linkdupes(rootpath: Path) -> None:
     dupes = finddupes(rootpath)
