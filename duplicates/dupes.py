@@ -24,8 +24,12 @@ class DuplicateFiles:
         return DuplicateFiles(duplicates=dupes, inoindex=inoindex)
 
     def __init__(self, duplicates: set[frozenset[BufferedIOFile]], inoindex: dict[int: frozenset[Path]]) -> None:
-        self.duplicates = duplicates
+        self.__duplicates = duplicates
         self.__inoindex = inoindex
+
+    @property
+    def duplicates(self):
+        return self.__duplicates
 
     @property
     def _inoindex(self):
