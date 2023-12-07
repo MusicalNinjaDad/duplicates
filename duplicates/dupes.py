@@ -55,9 +55,9 @@ def linkdupes(rootpath: Path) -> None:
         for mainfiletolink in fileiterator:
             inotolink = inoindex[mainfiletolink.path.stat().st_ino]
             for filetolink in inotolink:
-                replacewithlink(filetokeep, filetolink)
+                _replacewithlink(filetokeep, filetolink)
 
-def replacewithlink(keep: Path, replace: Path) -> None:
+def _replacewithlink(keep: Path, replace: Path) -> None:
     def _extendpath(self: Path, string: Any) -> Path:
         return Path(''.join((str(self),str(string))))
     Path.__add__ = _extendpath
