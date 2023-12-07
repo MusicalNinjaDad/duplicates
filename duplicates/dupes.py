@@ -12,11 +12,16 @@ class DuplicateFiles:
     def __init__(self, duplicates: set[frozenset[BufferedIOFile]], inoindex: dict[int: frozenset[Path]]) -> None:
         self.duplicates = duplicates
         self.__inoindex = inoindex
+        self.__uniqueinos = frozenset(next(iter(files)) for files in self.__inoindex.values()) 
 
     @property
     def _inoindex(self):
         return self.__inoindex
     
+    @property
+    def _uniqueinos(self):
+        return self.__uniqueinos
+
     def refreshinos(self):
         #if stale inos are ever going to be an issue this is probably how best to resolve
         raise NotImplementedError
