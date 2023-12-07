@@ -9,19 +9,6 @@ from .bufferediofile import BufferedIOFile
 
 class DuplicateFiles:
 
-    def __init__(self, duplicates: set[frozenset[BufferedIOFile]], inoindex: dict[int: frozenset[Path]]) -> None:
-        self.duplicates = duplicates
-        self.__inoindex = inoindex
-
-    @property
-    def _inoindex(self):
-        return self.__inoindex
-    
-    def refreshinos(self):
-        #if stale inos are ever going to be an issue this is probably how best to resolve
-        raise NotImplementedError
-    
-
     @classmethod
     def frompath(cls, rootpath: Path):
         samesizefiles = _filesofsamesize(rootpath)
@@ -35,6 +22,18 @@ class DuplicateFiles:
                 _ = [stack.enter_context(file.open()) for file in fileobjects]
                 dupes |= comparefilecontents({frozenset(fileobjects)})
         return DuplicateFiles(duplicates=dupes, inoindex=fullinoindex)
+
+    def __init__(self, duplicates: set[frozenset[BufferedIOFile]], inoindex: dict[int: frozenset[Path]]) -> None:
+        self.duplicates = duplicates
+        self.__inoindex = inoindex
+
+    @property
+    def _inoindex(self):
+        return self.__inoindex
+    
+    def refreshinos(self):
+        #if stale inos are ever going to be an issue this is probably how best to resolve
+        raise NotImplementedError
 
 def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
     newsets = set()
