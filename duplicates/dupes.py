@@ -48,11 +48,22 @@ class DuplicateFiles:
                 for filetolink in inotolink:
                     _replacewithlink(filetokeep, filetolink)
 
-    def printout(self) -> str:
+    def printout(self, ignoresamenames: bool = False) -> str:
         separator = '\n=====================\n'
+        def _countuniquenames(setoffiles):
+            return len({file.path.name for file in setoffiles})
         def _fileperline(fileset: frozenset[BufferedIOFile]) -> str:
             return '\n'.join(str(file.path) for file in fileset)
-        return separator.join(_fileperline(fileset) for fileset in self.duplicates)
+
+        if ignoresamenames:
+            interestinggroups = {
+                fileset for fileset in self.duplicates
+                if _countuniquenames(fileset) > 1
+            }
+        else:
+            interestinggroups = self.duplicates
+
+        return separator.join(_fileperline(fileset) for fileset in interestinggroups)
 
 def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
     newsets = set()
