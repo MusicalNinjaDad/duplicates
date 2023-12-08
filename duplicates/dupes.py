@@ -48,6 +48,12 @@ class DuplicateFiles:
                 for filetolink in inotolink:
                     _replacewithlink(filetokeep, filetolink)
 
+    def printout(self) -> str:
+        separator = '\n=====================\n'
+        def _fileperline(fileset: frozenset[BufferedIOFile]) -> str:
+            return '\n'.join(str(file.path) for file in fileset)
+        return separator.join(_fileperline(fileset) for fileset in self.duplicates)
+
 def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
     newsets = set()
     for setoffiles in setstocompare:
