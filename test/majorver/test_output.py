@@ -35,7 +35,7 @@ def test_printoutcontents(copiedtestfiles):
     assert any([permutation in stringelements for permutation in fileBpaths]),  'fileB paths not properly grouped'
     assert any([groupofpaths in fileBpaths for groupofpaths in stringelements]), 'fileB path group not found'
 
-    fileA2paths = [list(p) for p in permutations([str(path) for path in copiedtestfiles.paths['fileB']])]
+    fileA2paths = [list(p) for p in permutations([str(path) for path in copiedtestfiles.paths['fileA2']])]
     assert any([permutation in stringelements for permutation in fileA2paths]), 'fileA2 paths not properly grouped'
     assert any([groupofpaths in fileA2paths for groupofpaths in stringelements]), 'fileA2 path group not found'
 
@@ -68,12 +68,12 @@ def test_printoutcontents_frompath(copiedtestfiles):
     assert any([permutation in stringelements for permutation in fileBpaths]),  'fileB paths not properly grouped'
     assert any([groupofpaths in fileBpaths for groupofpaths in stringelements]), 'fileB path group not found'
 
-    fileA2paths = [list(p) for p in permutations([str(path) for path in copiedtestfiles.paths['fileB']])]
+    fileA2paths = [list(p) for p in permutations([str(path) for path in copiedtestfiles.paths['fileA2']])]
     assert any([permutation in stringelements for permutation in fileA2paths]), 'fileA2 paths not properly grouped'
     assert any([groupofpaths in fileA2paths for groupofpaths in stringelements]), 'fileA2 path group not found'
 
 @mark.copyfiles(('fileA',2), ('fileA2',2), ('fileB',3), ('fileA-copy',1))
-def test_printoutcontents_frompath(copiedtestfiles):
+def test_printoutcontents_ignoresamenames(copiedtestfiles):
     files = [
         'fileA',
         'fileA-copy'
