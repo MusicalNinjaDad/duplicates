@@ -54,6 +54,14 @@ sourcefiles = Testfiles(
 
 @fixture
 def copiedtestfiles(request, tmp_path) -> Testfiles:
+    yield from copytestfiles(request, tmp_path)
+
+@fixture(scope='class')
+def classtestfiles(request, tmp_path_factory) -> Testfiles:
+    tmp_dir = tmp_path_factory.mktemp(str(request.node.name))
+    yield from copytestfiles(request, tmp_dir)
+
+def copytestfiles(request, tmp_path) -> Testfiles:
     tmp_files = Testfiles(
         root = tmp_path,
         paths = defaultdict(list),
