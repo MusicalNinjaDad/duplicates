@@ -9,6 +9,9 @@ from . import DuplicateFiles
 @option("--link", is_flag=True)
 def dupes(rootdir, link):
     duplicatefiles = DuplicateFiles.frompath(Path(rootdir))
+    sets = len(duplicatefiles.duplicates)
+    totalfiles = len([file for group in duplicatefiles.duplicates for file in group])
+    print(f'{sets} sets of duplicates found, totalling {totalfiles} files')
     if link:
-        print(f'I will link files in {rootdir}')
+        print(f'Linking files in {rootdir}...')
         duplicatefiles.link()
