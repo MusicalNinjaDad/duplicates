@@ -25,3 +25,7 @@ jobs:
         run: |
           pip install -r test/requirements.txt
           pytest
+      - name: tox
+        run: |
+          pip install tox
+          tox

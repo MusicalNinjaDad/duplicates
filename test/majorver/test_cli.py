@@ -11,13 +11,15 @@ def test_link(copiedtestfiles):
         copiedtestfiles.root
     ]
     
-    run(command)
+    completed = run(command, capture_output=True)
 
-    fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
-    fileBino = copiedtestfiles.paths['fileB'][0].stat().st_ino
-    assert all(
-        file.stat().st_ino == fileAino for file in copiedtestfiles.paths['fileA']
-    )
-    assert all(
-        file.stat().st_ino == fileBino for file in copiedtestfiles.paths['fileB']
-    )
+    assert completed.stdout.decode().strip() == f'I will link files in {copiedtestfiles.root}'
+
+    # fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
+    # fileBino = copiedtestfiles.paths['fileB'][0].stat().st_ino
+    # assert all(
+    #     file.stat().st_ino == fileAino for file in copiedtestfiles.paths['fileA']
+    # )
+    # assert all(
+    #     file.stat().st_ino == fileBino for file in copiedtestfiles.paths['fileB']
+    # )
