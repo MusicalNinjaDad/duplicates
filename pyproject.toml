@@ -1,2 +1,30 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dupes"
+description = "Identify duplicate files and optionally create hardlinks to save storage"
+requires-python = ">=3.12"
+version = "0.1.0"
+
+[project.scripts]
+dupes = "duplicates.cli:dupes"
+
 [tool.pytest.ini_options]
 xfail_strict=true
+addopts = "-m 'not tox'"
+markers = [
+    "tox: tests must run in a tox environment"
+    ]
+
+[tool.tox]
+legacy_tox_ini = """
+    [tox]
+    isolated_build = True
+    requires = build
+    envlist = py
+    [testenv]
+    deps = -rtest/requirements.txt
+    commands = pytest -m tox
+"""
