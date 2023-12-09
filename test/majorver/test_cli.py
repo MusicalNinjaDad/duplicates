@@ -18,7 +18,7 @@ def test_link(copiedtestfiles):
         f'Linking files in {copiedtestfiles.root}...'
     ]
 
-    assert completed.stdout.decode().strip() == '\r\n'.join(output)
+    assert completed.stdout.decode().strip() == os.linesep.join(output)
 
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
     fileBino = copiedtestfiles.paths['fileB'][0].stat().st_ino
