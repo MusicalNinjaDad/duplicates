@@ -1,0 +1,62 @@
+[build-system]
+requires = ['setuptools']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'link-duplicates'
+description = 'Identify duplicate files and optionally create hardlinks to save storage'
+readme = 'README.md'
+license = {text = 'EUPL 1.2'}
+authors = [{name = 'Mike Foster'}]
+
+dynamic = ['version']
+requires-python = '>=3.12'
+dependencies = [
+    'click'
+]
+
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Environment :: Console',
+    'Intended Audience :: System Administrators',
+    'License :: OSI Approved :: European Union Public Licence 1.2 (EUPL 1.2)',
+    'Natural Language :: English',
+    'Operating System :: MacOS',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX',
+    'Topic :: System :: Archiving',
+    'Topic :: Utilities'
+]
+keywords = ['duplicate files hardlink windows linux mac backup']
+
+[project.urls]
+Source = 'https://github.com/MusicalNinjaRandInt/duplicates'
+
+[tool.setuptools.dynamic]
+version = {file = '__version__'}
+
+[tool.setuptools.packages.find]
+where = ['.']
+include = ['*']
+exclude = ['test*']
+
+[project.scripts]
+dupes = 'duplicates.cli:dupes'
+
+[tool.pytest.ini_options]
+xfail_strict=true
+addopts = '-m "not tox"'
+markers = [
+    'tox: tests must run in a tox environment'
+    ]
+
+[tool.tox]
+legacy_tox_ini = '''
+    [tox]
+    isolated_build = True
+    requires = build
+    envlist = py
+    [testenv]
+    deps = -rtest/requirements.txt
+    commands = pytest -m tox
+'''
