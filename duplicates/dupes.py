@@ -66,13 +66,15 @@ class DuplicateFiles:
         return separator.join(_fileperline(fileset) for fileset in interestinggroups)
 
 def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
-    newsets = set()
-    for setoffiles in setstocompare:
-        newsets |= _comparefilechunk(setoffiles)
-    try:
-        return comparefilecontents(newsets)
-    except EOFError:
-        return set(files for files in newsets)
+    comparisonstack = list(setstocompare)
+    duplicates = set()
+    while comparisonstack:
+        setoffiles = comparisonstack.pop()
+        try:
+            comparisonstack.extend(_comparefilechunk(setoffiles))
+        except EOFError:
+            duplicates.add(setoffiles)
+    return duplicates
 
 def _replacewithlink(keep: Path, replace: Path) -> None:
     def _extendpath(self: Path, string: Any) -> Path:
@@ -113,7 +115,7 @@ def _filesofsamesize(pathtosearch: Path) -> set[frozenset[Path]]:
         for root, dirs, files in in_path.walk():
             for file in files:
                 filepath = root / file
-                yield filepath
+                yield filepath #there's possibly some edge case involving symlinks where using resolve() and set would remove duplicate entries
     
     dupes = _sift(_filepaths(pathtosearch), lambda p: p.stat().st_size)
     return dupes
