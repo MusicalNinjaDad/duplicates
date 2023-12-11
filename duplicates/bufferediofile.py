@@ -21,7 +21,7 @@ class BufferedIOFile():
         return self.__handle
     
     def __str__(self) -> str:
-        return self.path
+        return str(self.path)
 
     def __repr__(self) -> str:
         return f'BufferedIOBase({self.path}, open: {self.handle is not None}, chunksize: {self.chunksize})'

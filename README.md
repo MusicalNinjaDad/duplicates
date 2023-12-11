@@ -1,5 +1,8 @@
 # Duplicates
 
+![Tests](https://github.com/MusicalNinjaRandInt/duplicates/actions/workflows/CI.yaml/badge.svg?branch=main)
+![PyPI - Version](https://img.shields.io/pypi/v/link-duplicates)
+
 Identify duplicate files and replace them with hardlinks on any OS.
 
 Intended to be used to reduce the storage space taken up by mutliple copies of similar backups. (E.g. regular google takeouts)
@@ -27,3 +30,5 @@ and finally ...
 You can also use the class `DuplicateFiles` to indentify and optionally link duplicates.
 
 Additionally `BufferedIOFile` provides a binary file which knows its `Path` and offers a `readchunk()` method similar to the text file `readline()`.
+
+![PyPI - Downloads](https://img.shields.io/pypi/dm/link-duplicates)
