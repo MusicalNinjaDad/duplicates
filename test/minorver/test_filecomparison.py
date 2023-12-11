@@ -39,7 +39,7 @@ def test_samefilecontentsstopsatEOF(copiedtestfiles, filesopen):
 @mark.copyfiles(('fileA',2))
 @mark.linkfiles(('fileA',1))
 def test_indexbyino(copiedtestfiles):
-    filestocompare = frozenset(path for path in copiedtestfiles.paths['fileA'])
+    filestocompare = frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileA'])
     assert len(filestocompare) == 3
     inoindex = _indexbyino(filestocompare)
     assert len(inoindex) == 2
