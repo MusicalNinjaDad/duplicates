@@ -12,7 +12,6 @@ def test_zerosizefile(copiedtestfiles):
     duplicatefiles = _filesofsamesize(copiedtestfiles.root)
     assert duplicatefiles == {frozenset((copiedtestfiles.paths['fileA'][0], copiedtestfiles.paths['fileA'][1]))}
 
-
 @mark.copyfiles(('fileA',2))
 def test_samefilecontentsfirstchunk(copiedtestfiles, filesopen):
     filestocompare = frozenset(
