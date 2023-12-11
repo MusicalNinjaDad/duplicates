@@ -66,13 +66,15 @@ class DuplicateFiles:
         return separator.join(_fileperline(fileset) for fileset in interestinggroups)
 
 def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[frozenset[BufferedIOFile]]:
-    newsets = set()
-    for setoffiles in setstocompare:
-        newsets |= _comparefilechunk(setoffiles)
-    try:
-        return comparefilecontents(newsets)
-    except EOFError:
-        return newsets
+    comparisonstack = list(setstocompare)
+    duplicates = set()
+    while comparisonstack:
+        setoffiles = comparisonstack.pop()
+        try:
+            comparisonstack.extend(_comparefilechunk(setoffiles))
+        except EOFError:
+            duplicates.add(setoffiles)
+    return duplicates
 
 def _replacewithlink(keep: Path, replace: Path) -> None:
     def _extendpath(self: Path, string: Any) -> Path:
