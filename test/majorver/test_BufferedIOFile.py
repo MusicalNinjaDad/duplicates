@@ -71,3 +71,12 @@ def test_open(copiedtestfiles):
         assert not testfile.handle
         with raises(ValueError):
             testfile.readchunk()
+
+def test_readchunk_zerolengthfile(tmp_path):
+    zerolengthfilepath = tmp_path / Path("file00")    
+    with open(zerolengthfilepath, 'w'): pass
+
+    testfile = BufferedIOFile(zerolengthfilepath)
+    with testfile.open():
+        chunk = testfile.readchunk()
+    assert chunk == b''
