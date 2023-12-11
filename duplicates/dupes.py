@@ -72,7 +72,7 @@ def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[fr
     try:
         return comparefilecontents(newsets)
     except EOFError:
-        return set(files for files in newsets)
+        return newsets
 
 def _replacewithlink(keep: Path, replace: Path) -> None:
     def _extendpath(self: Path, string: Any) -> Path:
@@ -113,7 +113,7 @@ def _filesofsamesize(pathtosearch: Path) -> set[frozenset[Path]]:
         for root, dirs, files in in_path.walk():
             for file in files:
                 filepath = root / file
-                yield filepath
+                yield filepath #there's possibly some edge case involving symlinks where using resolve() and set would remove duplicate entries
     
     dupes = _sift(_filepaths(pathtosearch), lambda p: p.stat().st_size)
     return dupes
