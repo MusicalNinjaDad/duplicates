@@ -1,6 +1,6 @@
 # CHANGELOG - Link Duplicates
 
-## 0.1.3
+## v0.1.3
 
 - reworked file comparison to avoid overrunning maximum recursion depth
 
