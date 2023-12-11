@@ -1,5 +1,9 @@
 # CHANGELOG - Link Duplicates
 
+## v0.1.4
+
+- avoid `ValueError` when path contains files with zero size
+
 ## v0.1.3
 
 - reworked file comparison to avoid overrunning maximum recursion depth
