@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from io import BufferedIOBase
 from pathlib import Path
 
+
 class BufferedIOFile():
     """ A File that knows it's Path and is able to provide buffered read in chunks
     """
@@ -20,6 +21,17 @@ class BufferedIOFile():
     def handle(self):
         return self.__handle
     
+    @property
+    def stat(self):
+        try:
+            return self.__stat
+        except AttributeError:
+            self.refreshstat()
+            return self.__stat
+        
+    def refreshstat(self):
+        self.__stat = self.path.stat()
+
     def __str__(self) -> str:
         return str(self.path)
 

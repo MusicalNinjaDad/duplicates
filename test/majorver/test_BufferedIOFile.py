@@ -80,3 +80,14 @@ def test_readchunk_zerolengthfile(tmp_path):
     with testfile.open():
         chunk = testfile.readchunk()
     assert chunk == b''
+
+@mark.copyfiles(('fileB',1))
+def test_statcache(copiedtestfiles):
+    testfilepath = copiedtestfiles.paths['fileB'][0]
+    testfile = BufferedIOFile(testfilepath)
+    assert testfile.stat == testfilepath.stat(), f'stat is not correct.\nExpected {testfilepath.stat()}\nGot: {testfile.stat}'
+    with open(testfilepath, 'w+') as file:
+        file.write('stuff')
+    assert testfile.stat != testfilepath.stat(), f'stat appears to have been updated or obtained realtime, not cached'
+    testfile.refreshstat()
+    assert testfile.stat == testfilepath.stat(), f'stat is not correct.\nExpected {testfilepath.stat()}\nGot: {testfile.stat}'
