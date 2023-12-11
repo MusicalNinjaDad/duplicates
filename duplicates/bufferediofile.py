@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from io import BufferedIOBase
+import os
 from pathlib import Path
 
 
@@ -9,7 +10,7 @@ class BufferedIOFile():
     MB = 1024**2
 
     def __init__(self, path: Path, handle: BufferedIOBase = None, chunksize: int = 100*MB):
-        self.__path = path
+        self.__path = path.resolve()
         self.__handle = handle
         self.chunksize = chunksize        
 
@@ -81,4 +82,14 @@ class BufferedIOFile():
             return self.cachedhash
         
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, (Path, BufferedIOFile)) and hash(self) == hash(other)
+        if isinstance(other, BufferedIOFile):
+            return hash(self) == hash(other)
+        else:
+            try:
+                return self.path == other.resolve()
+            except AttributeError:
+                pass
+            try:
+                return self.path == Path(os.fspath(other)).resolve()
+            except TypeError:
+                return False

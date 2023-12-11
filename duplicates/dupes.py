@@ -116,7 +116,7 @@ def _filesofsamesize(pathtosearch: Path) -> set[frozenset[BufferedIOFile]]:
         for root, dirs, files in in_path.walk():
             for file in files:
                 filepath = root / file
-                yield BufferedIOFile(filepath) #there's possibly some edge case involving symlinks where using resolve() and set would remove duplicate entries
+                yield BufferedIOFile(filepath)
     
     dupes = _sift(_bufferedfiles(pathtosearch), lambda f: f.stat.st_size)
     return dupes

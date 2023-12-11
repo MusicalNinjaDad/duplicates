@@ -35,6 +35,20 @@ def test_uniquenessbasedonpath(copiedtestfiles, filesopen):
     assert len(files) == 2
     assert files == {testfileA, testfileB} == {testfileA2, testfileB}
 
+def test_equal_relativepathsgiven():
+    path = Path('test/data')
+    file = BufferedIOFile(path)
+    assert file == path
+    assert file == 'test/data'
+
+@mark.skip(reason='Test not finished, SymLinks not available on Windows')
+@mark.copyfiles(('fileA',1))
+def test_equal_pathsresolved(copiedtestfiles):
+    fileA = copiedtestfiles.paths['fileA'][0]
+    symlink = copiedtestfiles.root / Path('linktoA.txt')
+    symlink.symlink_to(fileA)
+    assert fileA != symlink
+
 @mark.copyfiles(('fileA',1))
 def test_readbychunk(copiedtestfiles, filesopen):
     testfile = BufferedIOFile(copiedtestfiles.paths['fileA'][0], copiedtestfiles.handles['fileA'][0], chunksize=4)
