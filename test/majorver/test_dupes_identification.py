@@ -77,6 +77,5 @@ def test_multiplezerosizefiles(copiedtestfiles):
 
     identicalfiles = DuplicateFiles.frompath(copiedtestfiles.root)
     assert identicalfiles.duplicates == {
-        frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileA']),
-        frozenset(BufferedIOFile(path) for path in zerolengthfilepaths)
+        frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileA'])
     }

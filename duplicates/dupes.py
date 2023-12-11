@@ -89,7 +89,7 @@ def _sift(iterator: Iterable, siftby: Callable, onfail: Exception = None) -> set
     """Sifts an iterator and returns only those sets of values which share a common property
     - iterator: the iterator to sift
     - siftby: a Callable which when applied to each item in iterator returns the property to be used for sifting
-    - onfail: the exception type to raise if siftby returns a Falsey result. Default: None
+    - onfail: the exception type to raise if siftby returns a Falsey result. Default: None, ignore the item
 
     Returns: A set of frozensets, where all elements of each frozenset share the same property.
     Only sets with more than one item are returned - unique items are sifted out.
@@ -97,9 +97,11 @@ def _sift(iterator: Iterable, siftby: Callable, onfail: Exception = None) -> set
     tmpdict = defaultdict(set)
     for item in iterator:
         idx = siftby(item)
-        if not idx and onfail: 
+        if idx:
+            tmpdict[idx].add(item)
+        elif onfail: 
             raise onfail
-        tmpdict[idx].add(item)
+        
             
     return {frozenset(group) for group in tmpdict.values() if len(group) > 1}
 
