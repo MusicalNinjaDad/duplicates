@@ -18,6 +18,8 @@ class BufferedIOFile():
     def path(self):
         return self.__path
     
+    #TODO: Implement __fspath__ to make this PathLike
+    
     @property
     def handle(self):
         return self.__handle
