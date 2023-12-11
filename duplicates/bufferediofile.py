@@ -53,10 +53,11 @@ class BufferedIOFile():
         Returns an empty binary string if EOF is passed (analog to file.read())
         """
         try:
-            return next(self._iterator)
-        except AttributeError:
-            self._iterator = iter(self)
-            return next(self._iterator)
+            try:
+                return next(self._iterator)
+            except AttributeError:
+                self._iterator = iter(self)
+                return next(self._iterator)
         except StopIteration:
             return b''
 

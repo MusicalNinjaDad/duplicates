@@ -1,5 +1,9 @@
 # CHANGELOG - Link Duplicates
 
+## v0.1.5
+
+- avoid crashing out with a `StopIteration` when path contains multiple files with zero size
+
 ## v0.1.4
 
 - avoid `ValueError` when path contains files with zero size
