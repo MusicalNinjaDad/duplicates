@@ -55,3 +55,12 @@ def test_instantiatefrompath_multipleduplicatefiles(copiedtestfiles):
         frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileA']),
         frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileB'])
     }
+
+@mark.copyfiles(('fileA',2), ('fileA2',1), ('fileB', 4))
+def test_instantiatefrompath_zerosizefile(copiedtestfiles):
+    with open(copiedtestfiles.root / Path("file0"), 'w'): pass
+    identicalfiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    assert identicalfiles.duplicates == {
+        frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileA']),
+        frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileB'])
+    }

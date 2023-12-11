@@ -7,6 +7,13 @@ def test_fileissamesize(copiedtestfiles):
     assert duplicatefiles == {frozenset((copiedtestfiles.paths['fileA'][0], copiedtestfiles.paths['fileA'][1]))}
 
 @mark.copyfiles(('fileA',2))
+def test_zerosizefile(copiedtestfiles):
+    with open(copiedtestfiles.root / Path("file0"), 'w'): pass
+    duplicatefiles = _filesofsamesize(copiedtestfiles.root)
+    assert duplicatefiles == {frozenset((copiedtestfiles.paths['fileA'][0], copiedtestfiles.paths['fileA'][1]))}
+
+
+@mark.copyfiles(('fileA',2))
 def test_samefilecontentsfirstchunk(copiedtestfiles, filesopen):
     filestocompare = frozenset(
         BufferedIOFile(path_handle[0], path_handle[1], chunksize=4) for path_handle in zip(copiedtestfiles.paths['fileA'], copiedtestfiles.handles['fileA'])

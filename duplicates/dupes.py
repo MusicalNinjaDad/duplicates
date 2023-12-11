@@ -85,11 +85,11 @@ def _replacewithlink(keep: Path, replace: Path) -> None:
     tmplink.hardlink_to(keep)
     os.replace(tmplink, replace)
 
-def _sift(iterator: Iterable, siftby: Callable, onfail: Exception = ValueError) -> set[frozenset]:
+def _sift(iterator: Iterable, siftby: Callable, onfail: Exception = None) -> set[frozenset]:
     """Sifts an iterator and returns only those sets of values which share a common property
     - iterator: the iterator to sift
     - siftby: a Callable which when applied to each item in iterator returns the property to be used for sifting
-    - onfail: the exception type to raise if siftby returns a Falsey result. Default: Value Error
+    - onfail: the exception type to raise if siftby returns a Falsey result. Default: None
 
     Returns: A set of frozensets, where all elements of each frozenset share the same property.
     Only sets with more than one item are returned - unique items are sifted out.
@@ -97,10 +97,10 @@ def _sift(iterator: Iterable, siftby: Callable, onfail: Exception = ValueError) 
     tmpdict = defaultdict(set)
     for item in iterator:
         idx = siftby(item)
-        if idx: 
-            tmpdict[idx].add(item)
-        else:
+        if not idx and onfail: 
             raise onfail
+        tmpdict[idx].add(item)
+            
     return {frozenset(group) for group in tmpdict.values() if len(group) > 1}
 
 def _filesofsamesize(pathtosearch: Path) -> set[frozenset[Path]]:
