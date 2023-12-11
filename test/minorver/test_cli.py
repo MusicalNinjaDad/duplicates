@@ -14,7 +14,7 @@ def test_link(copiedtestfiles):
 
     output = [
         '2 sets of duplicates found, totalling 5 files',
-        f'Linking files in {copiedtestfiles.root}...'
+        f'Linking files in {copiedtestfiles.root} ...'
     ]
 
     assert result.output.strip() == '\n'.join(output)
