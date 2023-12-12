@@ -79,3 +79,16 @@ def test_multiplezerosizefiles(copiedtestfiles):
     assert identicalfiles.duplicates == {
         frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileA'])
     }
+
+@mark.copyfiles(('fileA',2))
+def test_instantiate_dropsymlinks(copiedtestfiles):
+    """Using resolve()d path in BufferedIOFile leads to symlinks being silently dropped
+    """
+    fileA = copiedtestfiles.paths['fileA'][0]
+    symlink = copiedtestfiles.root / Path('linktoA.txt')
+    try:
+        symlink.symlink_to(fileA)
+    except OSError as e:
+        if e.winerror == 1314: skip(reason='SymLinks not available on Windows without DevMode enabled')
+    duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    assert duplicatefiles.duplicates == {frozenset(path for path in copiedtestfiles.paths['fileA'])}, f'Following files identified as duplicates: {duplicatefiles.duplicates}'
