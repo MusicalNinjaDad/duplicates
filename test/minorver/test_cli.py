@@ -39,7 +39,7 @@ def test_link(copiedtestfiles):
 
 @mark.copyfiles(('fileA',2),('fileB',3))
 def test_linkapproved(copiedtestfiles):
-    clirunner = CliRunner()
+    clirunner = CliRunner(mix_stderr=False)
     command = [
         '--link',
         os.fspath(copiedtestfiles.root)
@@ -53,11 +53,13 @@ def test_linkapproved(copiedtestfiles):
         f'Will now begin comparing file contents, this may take some time',
         f'Identified 2 sets of duplicate files, totalling 5 files',
         f'Current usage: 101, future usage: 39, saving: 62',
-        'Link files? [y/N]: y',
+        'Link files? [y/N]:', #prompting to stderr doesn't echo input (including \n)
+        '', #workaround is to log a blank line
         f'Linking files in {copiedtestfiles.root} ...'
     ]
 
-    assert [s.strip() for s in result.output.strip().split('\n')] == output
+    stderr = [s.strip() for s in result.stderr.strip().split('\n')]
+    assert stderr == output
 
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
     fileBino = copiedtestfiles.paths['fileB'][0].stat().st_ino
