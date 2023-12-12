@@ -1,6 +1,9 @@
 # CHANGELOG - Link Duplicates
 
+## v0.2.0
+
 - added info on storage usage and savings
+- added confirmation prompt and -y option for linking
 
 ## v0.1.6 - improved handling of files to ignore
 
