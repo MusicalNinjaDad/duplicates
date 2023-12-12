@@ -1,7 +1,8 @@
 # Duplicates
 
-![Tests](https://github.com/MusicalNinjaRandInt/duplicates/actions/workflows/CI.yaml/badge.svg?branch=main)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/link-duplicates)
 ![PyPI - Version](https://img.shields.io/pypi/v/link-duplicates)
+![Tests](https://github.com/MusicalNinjaRandInt/duplicates/actions/workflows/CI.yaml/badge.svg?branch=main)
 
 Identify duplicate files and replace them with hardlinks on any OS.
 
