@@ -14,12 +14,19 @@ def test_link(copiedtestfiles):
     result = clirunner.invoke(dupes, command)
 
     output = [
-        '2 sets of duplicates found, totalling 5 files',
-        'current usage: 101, potential usage: 39, saving: 62',
+        f'Initiating search of {copiedtestfiles.root}',
+        f'Found 2 groups of same-sized files',
+        f'Identified 0 pre-existing hard links',
+        f'Will now begin comparing file contents, this may take some time',
+        f'Identified 2 sets of duplicate files, totalling 5 files',
+        f'Current usage: 101, future usage: 39, saving: 62',
         f'Linking files in {copiedtestfiles.root} ...'
     ]
 
-    assert [s.strip() for s in result.output.strip().split('\n')] == output
+    stdout = [s.strip() for s in result.output.strip().split('\n')]
+    assert (
+        stdout == output
+    ), f'\nOutput: {stdout}\nExpected: {output}'
 
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
     fileBino = copiedtestfiles.paths['fileB'][0].stat().st_ino
@@ -40,8 +47,12 @@ def test_linkapproved(copiedtestfiles):
     result = clirunner.invoke(dupes, command, input='y')
 
     output = [
-        '2 sets of duplicates found, totalling 5 files',
-        'current usage: 101, potential usage: 39, saving: 62',
+        f'Initiating search of {copiedtestfiles.root}',
+        f'Found 2 groups of same-sized files',
+        f'Identified 0 pre-existing hard links',
+        f'Will now begin comparing file contents, this may take some time',
+        f'Identified 2 sets of duplicate files, totalling 5 files',
+        f'Current usage: 101, future usage: 39, saving: 62',
         'Link files? [y/N]: y',
         f'Linking files in {copiedtestfiles.root} ...'
     ]
@@ -70,8 +81,12 @@ def test_link_abort(copiedtestfiles):
     result = clirunner.invoke(dupes, command, input='n')
 
     output = [
-        '2 sets of duplicates found, totalling 5 files',
-        'current usage: 101, potential usage: 39, saving: 62',
+        f'Initiating search of {copiedtestfiles.root}',
+        f'Found 2 groups of same-sized files',
+        f'Identified 0 pre-existing hard links',
+        f'Will now begin comparing file contents, this may take some time',
+        f'Identified 2 sets of duplicate files, totalling 5 files',
+        f'Current usage: 101, future usage: 39, saving: 62',
         'Link files? [y/N]: n',
         'Aborted!'
     ]
@@ -97,8 +112,12 @@ def test_nolink(copiedtestfiles):
     result = clirunner.invoke(dupes, command)
 
     output = [
-        '2 sets of duplicates found, totalling 5 files',
-        'current usage: 101, potential usage: 39, saving: 62'
+        f'Initiating search of {copiedtestfiles.root}',
+        f'Found 2 groups of same-sized files',
+        f'Identified 0 pre-existing hard links',
+        f'Will now begin comparing file contents, this may take some time',
+        f'Identified 2 sets of duplicate files, totalling 5 files',
+        f'Current usage: 101, future usage: 39, saving: 62'
     ]
 
     assert [s.strip() for s in result.output.strip().split('\n')] == output
