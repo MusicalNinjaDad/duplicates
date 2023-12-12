@@ -24,7 +24,7 @@ def test_link(copiedtestfiles):
         f'Linking files in {copiedtestfiles.root} ...'
     ]
 
-    stderr = [s.strip() for s in completed.stderr.decode().strip().split('\n')]
+    stderr = [removetimestamp(s.strip()) for s in completed.stderr.decode().strip().split('\n')]
     assert (
         stderr == output
     ), f'\nOutput: {stderr}\nExpected: {output}'
@@ -59,7 +59,7 @@ def test_nolink(copiedtestfiles):
         f'Current usage: 101, future usage: 39, saving: 62'
     ]
 
-    stderr = [s.strip() for s in completed.stderr.decode().strip().split('\n')]
+    stderr = [removetimestamp(s.strip()) for s in completed.stderr.decode().strip().split('\n')]
     assert (
         stderr == output
     ), f'\nOutput: {stderr}\nExpected: {output}'

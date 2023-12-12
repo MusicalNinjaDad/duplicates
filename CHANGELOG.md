@@ -1,5 +1,9 @@
 # CHANGELOG - Link Duplicates
 
+## v0.2.3
+
+- add timestamps to status output
+
 ## v0.2.2
 
 - send status output to stderr to allow `--list` to be redirected to a file

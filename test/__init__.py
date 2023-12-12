@@ -1,3 +1,4 @@
+import re
 from .. import *
 from pytest import mark, raises, skip
 
@@ -24,3 +25,8 @@ def skipon(exceptiontype: Exception, check: callable = lambda x: True, reason: s
         yield
     except exceptiontype as e:
         if check(e): skip(reason=reason)
+
+def removetimestamp(string):
+    timestamp = r'^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3} - '
+    timestamp = re.compile(timestamp)
+    return timestamp.sub('', string)

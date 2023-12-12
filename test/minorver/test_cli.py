@@ -2,10 +2,11 @@ import os
 from pytest import mark
 from ...duplicates.cli import dupes
 from click.testing import CliRunner
+from . import removetimestamp
 
 @mark.copyfiles(('fileA',2),('fileB',3))
 def test_link(copiedtestfiles):
-    clirunner = CliRunner()
+    clirunner = CliRunner(mix_stderr=False)
     command = [
         '--link',
         '-y',
@@ -23,10 +24,10 @@ def test_link(copiedtestfiles):
         f'Linking files in {copiedtestfiles.root} ...'
     ]
 
-    stdout = [s.strip() for s in result.output.strip().split('\n')]
+    stderr = [removetimestamp(s.strip()) for s in result.stderr.strip().split('\n')]
     assert (
-        stdout == output
-    ), f'\nOutput: {stdout}\nExpected: {output}'
+        stderr == output
+    ), f'\nOutput: {stderr}\nExpected: {output}'
 
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
     fileBino = copiedtestfiles.paths['fileB'][0].stat().st_ino
@@ -54,12 +55,11 @@ def test_linkapproved(copiedtestfiles):
         f'Identified 2 sets of duplicate files, totalling 5 files',
         f'Current usage: 101, future usage: 39, saving: 62',
         'Link files? [y/N]:', #prompting to stderr doesn't echo input (including \n)
-        '', #workaround is to log a blank line
         f'Linking files in {copiedtestfiles.root} ...'
     ]
 
-    stderr = [s.strip() for s in result.stderr.strip().split('\n')]
-    assert stderr == output
+    stderr = [removetimestamp(s.strip()) for s in result.stderr.strip().split('\n')]
+    assert stderr == output, f'\nOutput: {stderr}\nExpected: {output}'
 
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
     fileBino = copiedtestfiles.paths['fileB'][0].stat().st_ino
@@ -93,7 +93,7 @@ def test_link_abort(copiedtestfiles):
         'Aborted!'
     ]
 
-    stdout = [s.strip() for s in result.output.strip().split('\n')]
+    stdout = [removetimestamp(s.strip()) for s in result.output.strip().split('\n')]
     assert stdout == output, f'Stdout: {stdout}'
 
     newinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
@@ -122,7 +122,7 @@ def test_nolink(copiedtestfiles):
         f'Current usage: 101, future usage: 39, saving: 62'
     ]
 
-    assert [s.strip() for s in result.output.strip().split('\n')] == output
+    assert [removetimestamp(s.strip()) for s in result.output.strip().split('\n')] == output
 
     newinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
 

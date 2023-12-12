@@ -19,7 +19,7 @@ def dupes(rootdir, link, approved, _list, short):
     consoleoutput = logging.StreamHandler()
     consoleoutput.setLevel(logging.INFO)
     consoleoutput.setStream(sys.stderr)
-    outputformat = logging.Formatter('%(message)s')
+    outputformat = logging.Formatter('%(asctime)s - %(message)s')
     consoleoutput.setFormatter(outputformat)
     _logger.addHandler(consoleoutput)
 
@@ -33,7 +33,7 @@ def dupes(rootdir, link, approved, _list, short):
     
     if link:
         if not approved:
-            confirm('Link files?', abort=True, err=True) #prompting to stderr doesn't echo input (including \n)
-            _logger.info('\n') #workaround is to log a blank line
+            confirm('Link files?', abort=True, err=True) 
+            print('', file=sys.stderr) #prompting to stderr doesn't echo input (including \n)
         _logger.info(f'Linking files in {os.fspath(rootdir)} ...')
         duplicatefiles.link()
