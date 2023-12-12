@@ -8,6 +8,7 @@ def test_link(copiedtestfiles):
     command = [
         'dupes',
         '--link',
+        '-y',
         os.fspath(copiedtestfiles.root)
     ]
     
@@ -15,10 +16,11 @@ def test_link(copiedtestfiles):
     
     output = [
         '2 sets of duplicates found, totalling 5 files',
+        'current usage: 101, potential usage: 39, saving: 62',
         f'Linking files in {copiedtestfiles.root} ...'
     ]
 
-    assert completed.stdout.decode().strip() == os.linesep.join(output)
+    assert [s.strip() for s in completed.stdout.decode().strip().split('\n')] == output
 
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
     fileBino = copiedtestfiles.paths['fileB'][0].stat().st_ino
@@ -42,10 +44,11 @@ def test_nolink(copiedtestfiles):
     completed = run(command, capture_output=True)
 
     output = [
-        '2 sets of duplicates found, totalling 5 files'
+        '2 sets of duplicates found, totalling 5 files',
+        'current usage: 101, potential usage: 39, saving: 62'
     ]
 
-    assert completed.stdout.decode().strip() == '\n'.join(output)
+    assert [s.strip() for s in completed.stdout.decode().strip().split('\n')] == output
 
     newinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
 
