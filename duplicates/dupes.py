@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 from uuid import uuid1
 
-from .bufferediofile import BufferedIOFile
+from .bufferediofile import BufferedIOFile, IsASymlinkError
 
 class DuplicateFiles:
 
@@ -113,10 +113,13 @@ def _filesofsamesize(pathtosearch: Path) -> set[frozenset[BufferedIOFile]]:
     contain multiple files.
     """
     def _bufferedfiles(in_path: Path):
-        for root, dirs, files in in_path.walk():
+        for root, dirs, files in in_path.walk(follow_symlinks=False):
             for file in files:
                 filepath = root / file
-                yield BufferedIOFile(filepath)
+                try:
+                    yield BufferedIOFile(filepath)
+                except IsASymlinkError:
+                    pass
     
     dupes = _sift(_bufferedfiles(pathtosearch), lambda f: f.stat.st_size)
     return dupes

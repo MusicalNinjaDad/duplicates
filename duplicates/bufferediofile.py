@@ -2,14 +2,24 @@ from contextlib import contextmanager
 from io import BufferedIOBase
 import os
 from pathlib import Path
+from stat import *
 
+class IsASymlinkError(ValueError):
+    pass
 
 class BufferedIOFile():
     """ A File that knows it's Path and is able to provide buffered read in chunks
     """
     MB = 1024**2
 
-    def __init__(self, path: Path, handle: BufferedIOBase = None, chunksize: int = 100*MB):
+    def __init__(self, path: Path, handle: BufferedIOBase = None, chunksize: int = 100*MB, follow_symlinks=False):
+        if follow_symlinks:
+            raise NotImplementedError
+        
+        self.__stat = path.stat(follow_symlinks=follow_symlinks)
+        if S_ISLNK(self.__stat.st_mode):
+            raise IsASymlinkError('BufferedIOFile passed a symlink with follow_symlinks=False')
+        
         self.__path = path.resolve()
         self.__handle = handle
         self.chunksize = chunksize        

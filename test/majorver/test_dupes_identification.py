@@ -82,8 +82,6 @@ def test_multiplezerosizefiles(copiedtestfiles):
 
 @mark.copyfiles(('fileA',2))
 def test_instantiate_dropsymlinks(copiedtestfiles):
-    """Using resolve()d path in BufferedIOFile leads to symlinks being silently dropped
-    """
     fileA = copiedtestfiles.paths['fileA'][0]
     symlink = copiedtestfiles.root / Path('linktoA.txt')
     try:

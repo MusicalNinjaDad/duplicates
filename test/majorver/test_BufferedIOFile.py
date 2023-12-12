@@ -41,13 +41,41 @@ def test_equal_relativepathsgiven():
     assert file == path
     assert file == 'test/data'
 
-@mark.skip(reason='Test not finished, SymLinks not available on Windows')
 @mark.copyfiles(('fileA',1))
 def test_equal_pathsresolved(copiedtestfiles):
     fileA = copiedtestfiles.paths['fileA'][0]
     symlink = copiedtestfiles.root / Path('linktoA.txt')
-    symlink.symlink_to(fileA)
-    assert fileA != symlink
+    try:
+        symlink.symlink_to(fileA)
+    except OSError as e:
+        if e.winerror == 1314: skip(reason='SymLinks not available on Windows without DevMode enabled')
+    assert fileA != symlink, 'Something when wrong in the test setup'
+    assert fileA == symlink.resolve(), 'Something when wrong in the test setup'
+    fileA = BufferedIOFile(fileA)
+    assert fileA == symlink
+
+@mark.copyfiles(('fileA',1))
+def test_symlink_raiseserror(copiedtestfiles):
+    fileA = copiedtestfiles.paths['fileA'][0]
+    symlink = copiedtestfiles.root / Path('linktoA.txt')
+    try:
+        symlink.symlink_to(fileA)
+    except OSError as e:
+        if e.winerror == 1314: skip(reason='SymLinks not available on Windows without DevMode enabled')
+    with raises(IsASymlinkError):
+        symlink = BufferedIOFile(symlink)
+
+@mark.copyfiles(('fileA',1))
+def test_followsymlinks_notimplemented(copiedtestfiles):
+    fileA = copiedtestfiles.paths['fileA'][0]
+    symlink = copiedtestfiles.root / Path('linktoA.txt')
+    try:
+        symlink.symlink_to(fileA)
+    except OSError as e:
+        if e.winerror == 1314: skip(reason='SymLinks not available on Windows without DevMode enabled')
+    with raises(NotImplementedError):
+        symlink = BufferedIOFile(symlink, follow_symlinks=True)
+
 
 @mark.copyfiles(('fileA',1))
 def test_readbychunk(copiedtestfiles, filesopen):
