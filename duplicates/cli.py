@@ -18,7 +18,7 @@ def dupes(rootdir, link, approved, _list, short):
     _logger.setLevel(logging.INFO)
     consoleoutput = logging.StreamHandler()
     consoleoutput.setLevel(logging.INFO)
-    consoleoutput.setStream(sys.stdout)
+    consoleoutput.setStream(sys.stderr)
     outputformat = logging.Formatter('%(message)s')
     consoleoutput.setFormatter(outputformat)
     _logger.addHandler(consoleoutput)
@@ -33,6 +33,7 @@ def dupes(rootdir, link, approved, _list, short):
     
     if link:
         if not approved:
-            confirm('Link files?', abort=True)
-        print(f'Linking files in {os.fspath(rootdir)} ...')
+            confirm('Link files?', abort=True, err=True) #prompting to stderr doesn't echo input (including \n)
+            _logger.info('\n') #workaround is to log a blank line
+        _logger.info(f'Linking files in {os.fspath(rootdir)} ...')
         duplicatefiles.link()

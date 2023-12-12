@@ -1,10 +1,14 @@
 # CHANGELOG - Link Duplicates
 
+## v0.2.2
+
+- send status output to stderr to allow `--list` to be redirected to a file
+
 ## v0.2.1
 
 - improved output while running to give some kind of info on progress
 
-## v0.2.0
+## v0.2.0 - improved output
 
 - added info on storage usage and savings
 - added confirmation prompt and -y option for linking

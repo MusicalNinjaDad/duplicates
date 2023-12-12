@@ -24,10 +24,10 @@ def test_link(copiedtestfiles):
         f'Linking files in {copiedtestfiles.root} ...'
     ]
 
-    stdout = [s.strip() for s in completed.stdout.decode().strip().split('\n')]
+    stderr = [s.strip() for s in completed.stderr.decode().strip().split('\n')]
     assert (
-        stdout == output
-    ), f'\nOutput: {stdout}\nExpected: {output}'
+        stderr == output
+    ), f'\nOutput: {stderr}\nExpected: {output}'
 
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
     fileBino = copiedtestfiles.paths['fileB'][0].stat().st_ino
@@ -59,10 +59,10 @@ def test_nolink(copiedtestfiles):
         f'Current usage: 101, future usage: 39, saving: 62'
     ]
 
-    stdout = [s.strip() for s in completed.stdout.decode().strip().split('\n')]
+    stderr = [s.strip() for s in completed.stderr.decode().strip().split('\n')]
     assert (
-        stdout == output
-    ), f'\nOutput: {stdout}\nExpected: {output}'
+        stderr == output
+    ), f'\nOutput: {stderr}\nExpected: {output}'
 
     newinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
 
