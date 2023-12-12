@@ -15,12 +15,19 @@ def test_link(copiedtestfiles):
     completed = run(command, capture_output=True)
     
     output = [
-        '2 sets of duplicates found, totalling 5 files',
-        'current usage: 101, potential usage: 39, saving: 62',
+        f'Initiating search of {copiedtestfiles.root}',
+        f'Found 2 groups of same-sized files',
+        f'Identified 0 pre-existing hard links',
+        f'Will now begin comparing file contents, this may take some time',
+        f'Identified 2 sets of duplicate files, totalling 5 files',
+        f'Current usage: 101, future usage: 39, saving: 62',
         f'Linking files in {copiedtestfiles.root} ...'
     ]
 
-    assert [s.strip() for s in completed.stdout.decode().strip().split('\n')] == output
+    stdout = [s.strip() for s in completed.stdout.decode().strip().split('\n')]
+    assert (
+        stdout == output
+    ), f'\nOutput: {stdout}\nExpected: {output}'
 
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
     fileBino = copiedtestfiles.paths['fileB'][0].stat().st_ino
@@ -44,11 +51,18 @@ def test_nolink(copiedtestfiles):
     completed = run(command, capture_output=True)
 
     output = [
-        '2 sets of duplicates found, totalling 5 files',
-        'current usage: 101, potential usage: 39, saving: 62'
+        f'Initiating search of {copiedtestfiles.root}',
+        f'Found 2 groups of same-sized files',
+        f'Identified 0 pre-existing hard links',
+        f'Will now begin comparing file contents, this may take some time',
+        f'Identified 2 sets of duplicate files, totalling 5 files',
+        f'Current usage: 101, future usage: 39, saving: 62'
     ]
 
-    assert [s.strip() for s in completed.stdout.decode().strip().split('\n')] == output
+    stdout = [s.strip() for s in completed.stdout.decode().strip().split('\n')]
+    assert (
+        stdout == output
+    ), f'\nOutput: {stdout}\nExpected: {output}'
 
     newinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
 

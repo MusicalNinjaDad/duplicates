@@ -45,10 +45,8 @@ def test_equal_relativepathsgiven():
 def test_equal_pathsresolved(copiedtestfiles):
     fileA = copiedtestfiles.paths['fileA'][0]
     symlink = copiedtestfiles.root / Path('linktoA.txt')
-    try:
+    with skipon(OSError, lambda e: e.winerror == 1314, 'SymLinks not available on Windows without DevMode enabled'):
         symlink.symlink_to(fileA)
-    except OSError as e:
-        if e.winerror == 1314: skip(reason='SymLinks not available on Windows without DevMode enabled')
     assert fileA != symlink, 'Something when wrong in the test setup'
     assert fileA == symlink.resolve(), 'Something when wrong in the test setup'
     fileA = BufferedIOFile(fileA)
@@ -58,10 +56,8 @@ def test_equal_pathsresolved(copiedtestfiles):
 def test_symlink_raiseserror(copiedtestfiles):
     fileA = copiedtestfiles.paths['fileA'][0]
     symlink = copiedtestfiles.root / Path('linktoA.txt')
-    try:
+    with skipon(OSError, lambda e: e.winerror == 1314, 'SymLinks not available on Windows without DevMode enabled'):
         symlink.symlink_to(fileA)
-    except OSError as e:
-        if e.winerror == 1314: skip(reason='SymLinks not available on Windows without DevMode enabled')
     with raises(IsASymlinkError):
         symlink = BufferedIOFile(symlink)
 
@@ -69,10 +65,8 @@ def test_symlink_raiseserror(copiedtestfiles):
 def test_followsymlinks_notimplemented(copiedtestfiles):
     fileA = copiedtestfiles.paths['fileA'][0]
     symlink = copiedtestfiles.root / Path('linktoA.txt')
-    try:
+    with skipon(OSError, lambda e: e.winerror == 1314, 'SymLinks not available on Windows without DevMode enabled'):
         symlink.symlink_to(fileA)
-    except OSError as e:
-        if e.winerror == 1314: skip(reason='SymLinks not available on Windows without DevMode enabled')
     with raises(NotImplementedError):
         symlink = BufferedIOFile(symlink, follow_symlinks=True)
 

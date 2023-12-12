@@ -1,9 +1,12 @@
+import logging
 import os
 from pathlib import Path
+import sys
 from click import argument, command, confirm, option
 
-from . import DuplicateFiles
+from . import DuplicateFiles, LOGROOT
 
+_logger = logging.getLogger(LOGROOT)
 
 @command()
 @argument('rootdir')
@@ -12,17 +15,17 @@ from . import DuplicateFiles
 @option('--list', '_list', is_flag=True)
 @option('--short', is_flag=True)
 def dupes(rootdir, link, approved, _list, short):
-    roodir = Path(rootdir)
-    duplicatefiles = DuplicateFiles.frompath(roodir)
+    _logger.setLevel(logging.INFO)
+    consoleoutput = logging.StreamHandler()
+    consoleoutput.setLevel(logging.INFO)
+    consoleoutput.setStream(sys.stdout)
+    outputformat = logging.Formatter('%(message)s')
+    consoleoutput.setFormatter(outputformat)
+    _logger.addHandler(consoleoutput)
+
+    rootdir = Path(rootdir)
+    duplicatefiles = DuplicateFiles.frompath(rootdir)
     
-    sets = len(duplicatefiles.duplicates)
-    totalfiles = len([file for group in duplicatefiles.duplicates for file in group])
-    print(f'{sets} sets of duplicates found, totalling {totalfiles} files')
-    
-    totalsize = sum(file.stat.st_size for group in duplicatefiles.duplicates for file in group)
-    futuresize = sum(next(iter(group)).stat.st_size for group in duplicatefiles.duplicates)
-    print(f'current usage: {totalsize}, potential usage: {futuresize}, saving: {totalsize-futuresize}')
-        
     if short:
         print(duplicatefiles.printout(ignoresamenames=True))
     elif _list:

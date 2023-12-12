@@ -1,25 +1,42 @@
 from collections import defaultdict
 from contextlib import ExitStack
+import logging
 import os
 from pathlib import Path
 from typing import Any, Callable, Iterable
 from uuid import uuid1
 
 from .bufferediofile import BufferedIOFile, IsASymlinkError
+from . import LOGROOT
 
 class DuplicateFiles:
 
     @classmethod
     def frompath(cls, rootpath: Path):
+        _logger = logging.getLogger(f'{LOGROOT}.frompath')
+        _logger.info(f'Initiating search of {rootpath}')
+        
         samesizefiles = _filesofsamesize(rootpath)
+        _logger.info(f'Found {len(samesizefiles)} groups of same-sized files')
+        
         inoindex = _indexbyino(file for samesizeset in samesizefiles for file in samesizeset)
+        allfiles = {file for fileset in inoindex.values() for file in fileset}
         uniqueinos = frozenset(next(iter(files)) for files in inoindex.values())
+        _logger.info(f'Identified {len(allfiles)-len(uniqueinos)} pre-existing hard links')
+        _logger.info(f'Will now begin comparing file contents, this may take some time')
+        
         dupes = set()
         for fileset in samesizefiles:
             nohardlinks = fileset.intersection(uniqueinos)
             with ExitStack() as stack:
                 _ = [stack.enter_context(file.open()) for file in nohardlinks]
                 dupes |= comparefilecontents({frozenset(nohardlinks)})
+        alldupes = {file for fileset in dupes for file in fileset}
+        totalsize = sum(file.stat.st_size for file in alldupes)
+        futuresize = sum(next(iter(group)).stat.st_size for group in dupes)
+        _logger.info(f'Identified {len(dupes)} sets of duplicate files, totalling {len(alldupes)} files')
+        _logger.info(f'Current usage: {totalsize}, future usage: {futuresize}, saving: {totalsize-futuresize}')
+
         return DuplicateFiles(duplicates=dupes, inoindex=inoindex)
 
     def __init__(self, duplicates: set[frozenset[BufferedIOFile]], inoindex: dict[int: frozenset[Path]]) -> None:

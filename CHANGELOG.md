@@ -1,5 +1,9 @@
 # CHANGELOG - Link Duplicates
 
+## v0.2.1
+
+- improved output while running to give some kind of info on progress
+
 ## v0.2.0
 
 - added info on storage usage and savings
