@@ -1,14 +1,26 @@
 from contextlib import contextmanager
 from io import BufferedIOBase
+import os
 from pathlib import Path
+from stat import *
+
+class IsASymlinkError(ValueError):
+    pass
 
 class BufferedIOFile():
     """ A File that knows it's Path and is able to provide buffered read in chunks
     """
     MB = 1024**2
 
-    def __init__(self, path: Path, handle: BufferedIOBase = None, chunksize: int = 100*MB):
-        self.__path = path
+    def __init__(self, path: Path, handle: BufferedIOBase = None, chunksize: int = 100*MB, follow_symlinks=False):
+        if follow_symlinks:
+            raise NotImplementedError
+        
+        self.__stat = path.stat(follow_symlinks=follow_symlinks)
+        if S_ISLNK(self.__stat.st_mode):
+            raise IsASymlinkError('BufferedIOFile passed a symlink with follow_symlinks=False')
+        
+        self.__path = path.resolve()
         self.__handle = handle
         self.chunksize = chunksize        
 
@@ -16,10 +28,23 @@ class BufferedIOFile():
     def path(self):
         return self.__path
     
+    #TODO: Implement __fspath__ to make this PathLike
+    
     @property
     def handle(self):
         return self.__handle
     
+    @property
+    def stat(self):
+        try:
+            return self.__stat
+        except AttributeError:
+            self.refreshstat()
+            return self.__stat
+        
+    def refreshstat(self):
+        self.__stat = self.path.stat()
+
     def __str__(self) -> str:
         return str(self.path)
 
@@ -69,4 +94,14 @@ class BufferedIOFile():
             return self.cachedhash
         
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, (Path, BufferedIOFile)) and hash(self) == hash(other)
+        if isinstance(other, BufferedIOFile):
+            return hash(self) == hash(other)
+        else:
+            try:
+                return self.path == other.resolve()
+            except AttributeError:
+                pass
+            try:
+                return self.path == Path(os.fspath(other)).resolve()
+            except TypeError:
+                return False

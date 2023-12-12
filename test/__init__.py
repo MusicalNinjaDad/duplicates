@@ -1,2 +1,2 @@
 from .. import *
-from pytest import mark, raises
+from pytest import mark, raises, skip

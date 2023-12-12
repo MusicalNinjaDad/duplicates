@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 from uuid import uuid1
 
-from .bufferediofile import BufferedIOFile
+from .bufferediofile import BufferedIOFile, IsASymlinkError
 
 class DuplicateFiles:
 
@@ -17,10 +17,9 @@ class DuplicateFiles:
         dupes = set()
         for fileset in samesizefiles:
             nohardlinks = fileset.intersection(uniqueinos)
-            fileobjects = {BufferedIOFile(filepath) for filepath in nohardlinks}
             with ExitStack() as stack:
-                _ = [stack.enter_context(file.open()) for file in fileobjects]
-                dupes |= comparefilecontents({frozenset(fileobjects)})
+                _ = [stack.enter_context(file.open()) for file in nohardlinks]
+                dupes |= comparefilecontents({frozenset(nohardlinks)})
         return DuplicateFiles(duplicates=dupes, inoindex=inoindex)
 
     def __init__(self, duplicates: set[frozenset[BufferedIOFile]], inoindex: dict[int: frozenset[Path]]) -> None:
@@ -42,11 +41,11 @@ class DuplicateFiles:
     def link(self) -> None:
         for setoffiles in self.duplicates:
             fileiterator = iter(setoffiles)
-            filetokeep = next(fileiterator).path
+            filetokeep = next(fileiterator)
             for mainfiletolink in fileiterator:
-                inotolink = self._inoindex[mainfiletolink.path.stat().st_ino]
+                inotolink = self._inoindex[mainfiletolink.stat.st_ino]
                 for filetolink in inotolink:
-                    _replacewithlink(filetokeep, filetolink)
+                    _replacewithlink(filetokeep.path, filetolink.path)
 
     def printout(self, ignoresamenames: bool = False) -> str:
         separator = '\n=====================\n'
@@ -89,7 +88,7 @@ def _sift(iterator: Iterable, siftby: Callable, onfail: Exception = None) -> set
     """Sifts an iterator and returns only those sets of values which share a common property
     - iterator: the iterator to sift
     - siftby: a Callable which when applied to each item in iterator returns the property to be used for sifting
-    - onfail: the exception type to raise if siftby returns a Falsey result. Default: None
+    - onfail: the exception type to raise if siftby returns a Falsey result. Default: None, ignore the item
 
     Returns: A set of frozensets, where all elements of each frozenset share the same property.
     Only sets with more than one item are returned - unique items are sifted out.
@@ -97,13 +96,15 @@ def _sift(iterator: Iterable, siftby: Callable, onfail: Exception = None) -> set
     tmpdict = defaultdict(set)
     for item in iterator:
         idx = siftby(item)
-        if not idx and onfail: 
+        if idx:
+            tmpdict[idx].add(item)
+        elif onfail: 
             raise onfail
-        tmpdict[idx].add(item)
+        
             
     return {frozenset(group) for group in tmpdict.values() if len(group) > 1}
 
-def _filesofsamesize(pathtosearch: Path) -> set[frozenset[Path]]:
+def _filesofsamesize(pathtosearch: Path) -> set[frozenset[BufferedIOFile]]:
     """ Walks through all files in a path recursively and identifies those files which all have the same size.
     
     - pathtosearch: a Pathlib path to search recursively
@@ -111,22 +112,25 @@ def _filesofsamesize(pathtosearch: Path) -> set[frozenset[Path]]:
     Returns a set of frozensets of Paths, where all items in each frozen set have the same size. Only returns groups which
     contain multiple files.
     """
-    def _filepaths(in_path: Path):
-        for root, dirs, files in in_path.walk():
+    def _bufferedfiles(in_path: Path):
+        for root, dirs, files in in_path.walk(follow_symlinks=False):
             for file in files:
                 filepath = root / file
-                yield filepath #there's possibly some edge case involving symlinks where using resolve() and set would remove duplicate entries
+                try:
+                    yield BufferedIOFile(filepath)
+                except IsASymlinkError:
+                    pass
     
-    dupes = _sift(_filepaths(pathtosearch), lambda p: p.stat().st_size)
+    dupes = _sift(_bufferedfiles(pathtosearch), lambda f: f.stat.st_size)
     return dupes
 
 def _comparefilechunk(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[BufferedIOFile]]:
     possibleduplicates = _sift(filestocompare, lambda f: f.readchunk(), EOFError)
     return possibleduplicates
     
-def _indexbyino(filestoindex: Iterable[Path]) -> dict[int: set[Path]]:    
+def _indexbyino(filestoindex: Iterable[BufferedIOFile]) -> dict[int: set[BufferedIOFile]]:
     uniqueinos = defaultdict(set)
     for file in filestoindex:
-        id = file.stat().st_ino
+        id = file.stat.st_ino
         uniqueinos[id].add(file)
     return uniqueinos

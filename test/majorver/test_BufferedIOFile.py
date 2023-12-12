@@ -35,6 +35,48 @@ def test_uniquenessbasedonpath(copiedtestfiles, filesopen):
     assert len(files) == 2
     assert files == {testfileA, testfileB} == {testfileA2, testfileB}
 
+def test_equal_relativepathsgiven():
+    path = Path('test/data')
+    file = BufferedIOFile(path)
+    assert file == path
+    assert file == 'test/data'
+
+@mark.copyfiles(('fileA',1))
+def test_equal_pathsresolved(copiedtestfiles):
+    fileA = copiedtestfiles.paths['fileA'][0]
+    symlink = copiedtestfiles.root / Path('linktoA.txt')
+    try:
+        symlink.symlink_to(fileA)
+    except OSError as e:
+        if e.winerror == 1314: skip(reason='SymLinks not available on Windows without DevMode enabled')
+    assert fileA != symlink, 'Something when wrong in the test setup'
+    assert fileA == symlink.resolve(), 'Something when wrong in the test setup'
+    fileA = BufferedIOFile(fileA)
+    assert fileA == symlink
+
+@mark.copyfiles(('fileA',1))
+def test_symlink_raiseserror(copiedtestfiles):
+    fileA = copiedtestfiles.paths['fileA'][0]
+    symlink = copiedtestfiles.root / Path('linktoA.txt')
+    try:
+        symlink.symlink_to(fileA)
+    except OSError as e:
+        if e.winerror == 1314: skip(reason='SymLinks not available on Windows without DevMode enabled')
+    with raises(IsASymlinkError):
+        symlink = BufferedIOFile(symlink)
+
+@mark.copyfiles(('fileA',1))
+def test_followsymlinks_notimplemented(copiedtestfiles):
+    fileA = copiedtestfiles.paths['fileA'][0]
+    symlink = copiedtestfiles.root / Path('linktoA.txt')
+    try:
+        symlink.symlink_to(fileA)
+    except OSError as e:
+        if e.winerror == 1314: skip(reason='SymLinks not available on Windows without DevMode enabled')
+    with raises(NotImplementedError):
+        symlink = BufferedIOFile(symlink, follow_symlinks=True)
+
+
 @mark.copyfiles(('fileA',1))
 def test_readbychunk(copiedtestfiles, filesopen):
     testfile = BufferedIOFile(copiedtestfiles.paths['fileA'][0], copiedtestfiles.handles['fileA'][0], chunksize=4)
@@ -71,3 +113,23 @@ def test_open(copiedtestfiles):
         assert not testfile.handle
         with raises(ValueError):
             testfile.readchunk()
+
+def test_readchunk_zerolengthfile(tmp_path):
+    zerolengthfilepath = tmp_path / Path("file00")    
+    with open(zerolengthfilepath, 'w'): pass
+
+    testfile = BufferedIOFile(zerolengthfilepath)
+    with testfile.open():
+        chunk = testfile.readchunk()
+    assert chunk == b''
+
+@mark.copyfiles(('fileB',1))
+def test_statcache(copiedtestfiles):
+    testfilepath = copiedtestfiles.paths['fileB'][0]
+    testfile = BufferedIOFile(testfilepath)
+    assert testfile.stat == testfilepath.stat(), f'stat is not correct.\nExpected {testfilepath.stat()}\nGot: {testfile.stat}'
+    with open(testfilepath, 'w+') as file:
+        file.write('stuff')
+    assert testfile.stat != testfilepath.stat(), f'stat appears to have been updated or obtained realtime, not cached'
+    testfile.refreshstat()
+    assert testfile.stat == testfilepath.stat(), f'stat is not correct.\nExpected {testfilepath.stat()}\nGot: {testfile.stat}'
