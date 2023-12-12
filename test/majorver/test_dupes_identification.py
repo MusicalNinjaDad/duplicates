@@ -84,9 +84,7 @@ def test_multiplezerosizefiles(copiedtestfiles):
 def test_instantiate_dropsymlinks(copiedtestfiles):
     fileA = copiedtestfiles.paths['fileA'][0]
     symlink = copiedtestfiles.root / Path('linktoA.txt')
-    try:
+    with skipon(OSError, lambda e: e.winerror == 1314, 'SymLinks not available on Windows without DevMode enabled'):
         symlink.symlink_to(fileA)
-    except OSError as e:
-        if e.winerror == 1314: skip(reason='SymLinks not available on Windows without DevMode enabled')
     duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
     assert duplicatefiles.duplicates == {frozenset(path for path in copiedtestfiles.paths['fileA'])}, f'Following files identified as duplicates: {duplicatefiles.duplicates}'
