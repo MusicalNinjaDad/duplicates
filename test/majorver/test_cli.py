@@ -8,6 +8,7 @@ def test_link(copiedtestfiles):
     command = [
         'dupes',
         '--link',
+        '-y',
         os.fspath(copiedtestfiles.root)
     ]
     
