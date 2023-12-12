@@ -1,16 +1,20 @@
 from collections import defaultdict
 from contextlib import ExitStack
+import logging
 import os
 from pathlib import Path
 from typing import Any, Callable, Iterable
 from uuid import uuid1
 
 from .bufferediofile import BufferedIOFile, IsASymlinkError
+from . import LOGROOT
 
 class DuplicateFiles:
 
     @classmethod
     def frompath(cls, rootpath: Path):
+        _logger = logging.getLogger(f'{LOGROOT}.frompath')
+        _logger.info(f'Initiating search of {rootpath}')
         samesizefiles = _filesofsamesize(rootpath)
         inoindex = _indexbyino(file for samesizeset in samesizefiles for file in samesizeset)
         uniqueinos = frozenset(next(iter(files)) for files in inoindex.values())
