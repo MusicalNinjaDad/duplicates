@@ -16,6 +16,7 @@ class DuplicateFiles:
         _logger = logging.getLogger(f'{LOGROOT}.frompath')
         _logger.info(f'Initiating search of {rootpath}')
         samesizefiles = _filesofsamesize(rootpath)
+        _logger.info(f'Found {len(samesizefiles)} groups of same-sized files')
         inoindex = _indexbyino(file for samesizeset in samesizefiles for file in samesizeset)
         uniqueinos = frozenset(next(iter(files)) for files in inoindex.values())
         dupes = set()
