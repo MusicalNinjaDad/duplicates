@@ -1,7 +1,8 @@
 # CHANGELOG - Link Duplicates
 
-## v0.1.6
+## v0.1.6 - improved handling of files to ignore
 
+- ignore symlinks
 - ignore files of zero size completely
 
 ## v0.1.5
