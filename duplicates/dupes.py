@@ -32,7 +32,10 @@ class DuplicateFiles:
                 _ = [stack.enter_context(file.open()) for file in nohardlinks]
                 dupes |= comparefilecontents({frozenset(nohardlinks)})
         alldupes = {file for fileset in dupes for file in fileset}
+        totalsize = sum(file.stat.st_size for file in alldupes)
+        futuresize = sum(next(iter(group)).stat.st_size for group in dupes)
         _logger.info(f'Identified {len(dupes)} sets of duplicate files, totalling {len(alldupes)} files')
+        _logger.info(f'Current usage: {totalsize}, future usage: {futuresize}, saving: {totalsize-futuresize}')
 
         return DuplicateFiles(duplicates=dupes, inoindex=inoindex)
 

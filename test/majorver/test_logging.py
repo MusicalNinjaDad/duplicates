@@ -15,7 +15,8 @@ def test_instantiatefrompath(copiedtestfiles, caplog):
         f'Found 1 groups of same-sized files',
         f'Identified 1 pre-existing hard links',
         f'Will now begin comparing file contents, this may take some time',
-        f'Identified 1 sets of duplicate files, totalling 2 files'
+        f'Identified 1 sets of duplicate files, totalling 2 files',
+        f'Current usage: 32, future usage: 16, saving: 16'
     ]
 
     assert (
