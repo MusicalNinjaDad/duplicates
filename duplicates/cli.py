@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from click import argument, command, option
+from click import argument, command, confirm, option
 
 from . import DuplicateFiles
 
@@ -8,9 +8,10 @@ from . import DuplicateFiles
 @command()
 @argument('rootdir')
 @option('--link', is_flag=True)
+@option('-y', 'approved', is_flag=True)
 @option('--list', '_list', is_flag=True)
 @option('--short', is_flag=True)
-def dupes(rootdir, link, _list, short):
+def dupes(rootdir, link, approved, _list, short):
     roodir = Path(rootdir)
     duplicatefiles = DuplicateFiles.frompath(roodir)
     
@@ -28,5 +29,7 @@ def dupes(rootdir, link, _list, short):
         print(duplicatefiles.printout())
     
     if link:
+        if not approved:
+            confirm('Link files?', abort=True)
         print(f'Linking files in {os.fspath(rootdir)} ...')
         duplicatefiles.link()
