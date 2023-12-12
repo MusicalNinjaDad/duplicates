@@ -14,10 +14,11 @@ def test_link(copiedtestfiles):
 
     output = [
         '2 sets of duplicates found, totalling 5 files',
+        'current usage: 101, potential usage: 39, saving: 62',
         f'Linking files in {copiedtestfiles.root} ...'
     ]
 
-    assert result.output.strip() == '\n'.join(output)
+    assert [s.strip() for s in result.output.strip().split('\n')] == output
 
     fileAino = copiedtestfiles.paths['fileA'][0].stat().st_ino
     fileBino = copiedtestfiles.paths['fileB'][0].stat().st_ino
@@ -41,10 +42,11 @@ def test_nolink(copiedtestfiles):
     result = clirunner.invoke(dupes, command)
 
     output = [
-        '2 sets of duplicates found, totalling 5 files'
+        '2 sets of duplicates found, totalling 5 files',
+        'current usage: 101, potential usage: 39, saving: 62'
     ]
 
-    assert result.output.strip() == '\n'.join(output)
+    assert [s.strip() for s in result.output.strip().split('\n')] == output
 
     newinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
 

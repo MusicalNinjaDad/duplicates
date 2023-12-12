@@ -18,6 +18,10 @@ def dupes(rootdir, link, _list, short):
     totalfiles = len([file for group in duplicatefiles.duplicates for file in group])
     print(f'{sets} sets of duplicates found, totalling {totalfiles} files')
     
+    totalsize = sum(file.stat.st_size for group in duplicatefiles.duplicates for file in group)
+    futuresize = sum(next(iter(group)).stat.st_size for group in duplicatefiles.duplicates)
+    print(f'current usage: {totalsize}, potential usage: {futuresize}, saving: {totalsize-futuresize}')
+        
     if short:
         print(duplicatefiles.printout(ignoresamenames=True))
     elif _list:

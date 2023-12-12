@@ -1,5 +1,7 @@
 # CHANGELOG - Link Duplicates
 
+- added info on storage usage and savings
+
 ## v0.1.6 - improved handling of files to ignore
 
 - ignore symlinks
