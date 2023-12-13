@@ -21,7 +21,8 @@ def test_link(copiedtestfiles):
         f'Will now begin comparing file contents, this may take some time',
         f'Identified 2 sets of duplicate files, totalling 5 files',
         f'Current usage: 101, future usage: 39, saving: 62',
-        f'Linking files in {copiedtestfiles.root} ...'
+        f'Linking files in {copiedtestfiles.root} ...',
+        'Done'
     ]
 
     stderr = [removetimestamp(s.strip()) for s in completed.stderr.decode().strip().split('\n')]
