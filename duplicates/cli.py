@@ -37,3 +37,4 @@ def dupes(rootdir, link, approved, _list, short):
             print('', file=sys.stderr) #prompting to stderr doesn't echo input (including \n)
         _logger.info(f'Linking files in {os.fspath(rootdir)} ...')
         duplicatefiles.link()
+        _logger.info(f'Done')

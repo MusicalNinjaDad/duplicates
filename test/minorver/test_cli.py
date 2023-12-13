@@ -16,12 +16,13 @@ def test_link(copiedtestfiles):
 
     output = [
         f'Initiating search of {copiedtestfiles.root}',
-        f'Found 2 groups of same-sized files',
-        f'Identified 0 pre-existing hard links',
+        f'Found 2 groups of same-sized files, totalling 5 files',
+        f'Identified 0 pre-existing hard links, leaving 5 files for comparison',
         f'Will now begin comparing file contents, this may take some time',
         f'Identified 2 sets of duplicate files, totalling 5 files',
         f'Current usage: 101, future usage: 39, saving: 62',
-        f'Linking files in {copiedtestfiles.root} ...'
+        f'Linking files in {copiedtestfiles.root} ...',
+        'Done'
     ]
 
     stderr = [removetimestamp(s.strip()) for s in result.stderr.strip().split('\n')]
@@ -49,13 +50,14 @@ def test_linkapproved(copiedtestfiles):
 
     output = [
         f'Initiating search of {copiedtestfiles.root}',
-        f'Found 2 groups of same-sized files',
-        f'Identified 0 pre-existing hard links',
+        f'Found 2 groups of same-sized files, totalling 5 files',
+        f'Identified 0 pre-existing hard links, leaving 5 files for comparison',
         f'Will now begin comparing file contents, this may take some time',
         f'Identified 2 sets of duplicate files, totalling 5 files',
         f'Current usage: 101, future usage: 39, saving: 62',
         'Link files? [y/N]:', #prompting to stderr doesn't echo input (including \n)
-        f'Linking files in {copiedtestfiles.root} ...'
+        f'Linking files in {copiedtestfiles.root} ...',
+        'Done'
     ]
 
     stderr = [removetimestamp(s.strip()) for s in result.stderr.strip().split('\n')]
@@ -84,8 +86,8 @@ def test_link_abort(copiedtestfiles):
 
     output = [
         f'Initiating search of {copiedtestfiles.root}',
-        f'Found 2 groups of same-sized files',
-        f'Identified 0 pre-existing hard links',
+        f'Found 2 groups of same-sized files, totalling 5 files',
+        f'Identified 0 pre-existing hard links, leaving 5 files for comparison',
         f'Will now begin comparing file contents, this may take some time',
         f'Identified 2 sets of duplicate files, totalling 5 files',
         f'Current usage: 101, future usage: 39, saving: 62',
@@ -115,8 +117,8 @@ def test_nolink(copiedtestfiles):
 
     output = [
         f'Initiating search of {copiedtestfiles.root}',
-        f'Found 2 groups of same-sized files',
-        f'Identified 0 pre-existing hard links',
+        f'Found 2 groups of same-sized files, totalling 5 files',
+        f'Identified 0 pre-existing hard links, leaving 5 files for comparison',
         f'Will now begin comparing file contents, this may take some time',
         f'Identified 2 sets of duplicate files, totalling 5 files',
         f'Current usage: 101, future usage: 39, saving: 62'

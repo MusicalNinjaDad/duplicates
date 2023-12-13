@@ -55,7 +55,7 @@ class BufferedIOFile():
     def open(self):
         with open(self.path, 'rb') as self.__handle: 
             yield
-            self.__handle = None
+        self.__handle = None
 
     class _FileIterator():
         def __init__(self, handle: BufferedIOBase, chunksize: int) -> None:

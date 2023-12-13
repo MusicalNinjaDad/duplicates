@@ -1,3 +1,4 @@
+import os
 import uuid
 from collections import defaultdict
 from contextlib import ExitStack
@@ -54,22 +55,34 @@ sourcefiles = Testfiles(
 
 @fixture
 def copiedtestfiles(request, tmp_path) -> Testfiles:
-    yield from copytestfiles(request, tmp_path)
+    filestocopy = request.node.get_closest_marker('copyfiles')
+    if filestocopy.args:
+        yield copytestfiles(request, tmp_path, filestocopy.args)
+    else:
+        def mktmp(id): 
+            dir = tmp_path / Path(id)
+            dir.mkdir()
+            return dir
+        yield {setname: copytestfiles(request, mktmp(setname), setoffiles) for setname, setoffiles in filestocopy.kwargs.items()}
+        
 
 @fixture(scope='class')
 def classtestfiles(request, tmp_path_factory) -> Testfiles:
     tmp_dir = tmp_path_factory.mktemp(str(request.node.name))
-    yield from copytestfiles(request, tmp_dir)
+    filestocopy = request.node.get_closest_marker('copyfiles')
+    if filestocopy.args:
+        yield copytestfiles(request, tmp_dir, filestocopy.args)
+    else:
+        raise NotImplementedError
 
-def copytestfiles(request, tmp_path) -> Testfiles:
+def copytestfiles(request, tmp_path, filestocopy) -> Testfiles:
     tmp_files = Testfiles(
         root = tmp_path,
         paths = defaultdict(list),
         handles = defaultdict(list)
     )
 
-    filestocopy = request.node.get_closest_marker('copyfiles')
-    for file in filestocopy.args:
+    for file in filestocopy:
         fileid, numcopies = file
         for _ in range(numcopies):
             uniquedir = tmp_path / str(uuid.uuid1())
@@ -87,7 +100,7 @@ def copytestfiles(request, tmp_path) -> Testfiles:
                 newfile = tmp_path / uniquedir / sourcefiles.paths[fileid].name
                 newfile.hardlink_to(tmp_files.paths[fileid][0])
                 tmp_files.paths[fileid].append(newfile)
-    yield tmp_files
+    return tmp_files
 
 @fixture
 def filesopen(copiedtestfiles):

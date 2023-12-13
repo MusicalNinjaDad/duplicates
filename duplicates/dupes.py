@@ -17,20 +17,22 @@ class DuplicateFiles:
         _logger.info(f'Initiating search of {rootpath}')
         
         samesizefiles = _filesofsamesize(rootpath)
-        _logger.info(f'Found {len(samesizefiles)} groups of same-sized files')
-        
+        allfiles = {file for fileset in samesizefiles for file in fileset}
+        _logger.info(f'Found {len(samesizefiles)} groups of same-sized files, totalling {len(allfiles)} files')
+
         inoindex = _indexbyino(file for samesizeset in samesizefiles for file in samesizeset)
-        allfiles = {file for fileset in inoindex.values() for file in fileset}
         uniqueinos = frozenset(next(iter(files)) for files in inoindex.values())
-        _logger.info(f'Identified {len(allfiles)-len(uniqueinos)} pre-existing hard links')
+        _logger.info(f'Identified {len(allfiles)-len(uniqueinos)} pre-existing hard links, leaving {len(uniqueinos)} files for comparison')
         _logger.info(f'Will now begin comparing file contents, this may take some time')
         
         dupes = set()
         for fileset in samesizefiles:
             nohardlinks = fileset.intersection(uniqueinos)
-            with ExitStack() as stack:
-                _ = [stack.enter_context(file.open()) for file in nohardlinks]
-                dupes |= comparefilecontents({frozenset(nohardlinks)})
+            if len(nohardlinks) > 1:
+                with ExitStack() as stack:
+                    _ = [stack.enter_context(file.open()) for file in nohardlinks]
+                    dupes |= comparefilecontents({frozenset(nohardlinks)})
+                    
         alldupes = {file for fileset in dupes for file in fileset}
         totalsize = sum(file.stat.st_size for file in alldupes)
         futuresize = sum(next(iter(group)).stat.st_size for group in dupes)
