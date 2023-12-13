@@ -24,7 +24,7 @@ def dupes(rootdir, link, approved, _list, short):
     _logger.addHandler(consoleoutput)
 
     rootdir = Path(rootdir)
-    duplicatefiles = DuplicateFiles.frompath(rootdir)
+    duplicatefiles = DuplicateFiles.frompaths(rootdir)
     
     if short:
         print(duplicatefiles.printout(ignoresamenames=True))

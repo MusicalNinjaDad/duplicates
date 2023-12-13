@@ -3,7 +3,7 @@ from . import *
 @mark.copyfiles(('fileA',2), ('fileB', 1), ('fileA2', 1))
 @mark.linkfiles(('fileA',1))
 def test_inoindex(copiedtestfiles):
-    duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    duplicatefiles = DuplicateFiles.frompaths(copiedtestfiles.root)
     assert duplicatefiles._inoindex == {
         copiedtestfiles.paths['fileA'][0].stat().st_ino: frozenset({
             copiedtestfiles.paths['fileA'][0],

@@ -12,11 +12,12 @@ from . import LOGROOT
 class DuplicateFiles:
 
     @classmethod
-    def frompath(cls, rootpath: Path):
+    def frompaths(cls, *rootpaths: Path):
         _logger = logging.getLogger(f'{LOGROOT}.frompath')
-        _logger.info(f'Initiating search of {rootpath}')
+        _logger.info(f'Initiating search of {', '.join(str(p) for p in rootpaths)}')
         
-        samesizefiles = _filesofsamesize(rootpath)
+        samesizefiles = _filesofsamesize(rootpaths)
+
         allfiles = {file for fileset in samesizefiles for file in fileset}
         _logger.info(f'Found {len(samesizefiles)} groups of same-sized files, totalling {len(allfiles)} files')
 
@@ -123,7 +124,7 @@ def _sift(iterator: Iterable, siftby: Callable, onfail: Exception = None) -> set
             
     return {frozenset(group) for group in tmpdict.values() if len(group) > 1}
 
-def _filesofsamesize(pathtosearch: Path) -> set[frozenset[BufferedIOFile]]:
+def _filesofsamesize(pathstosearch: Path) -> set[frozenset[BufferedIOFile]]:
     """ Walks through all files in a path recursively and identifies those files which all have the same size.
     
     - pathtosearch: a Pathlib path to search recursively
@@ -131,16 +132,17 @@ def _filesofsamesize(pathtosearch: Path) -> set[frozenset[BufferedIOFile]]:
     Returns a set of frozensets of Paths, where all items in each frozen set have the same size. Only returns groups which
     contain multiple files.
     """
-    def _bufferedfiles(in_path: Path):
-        for root, dirs, files in in_path.walk(follow_symlinks=False):
-            for file in files:
-                filepath = root / file
-                try:
-                    yield BufferedIOFile(filepath)
-                except IsASymlinkError:
-                    pass
+    def _bufferedfiles(in_paths: Path):
+        for in_path in in_paths:
+            for root, dirs, files in in_path.walk(follow_symlinks=False):
+                for file in files:
+                    filepath = root / file
+                    try:
+                        yield BufferedIOFile(filepath)
+                    except IsASymlinkError:
+                        pass
     
-    dupes = _sift(_bufferedfiles(pathtosearch), lambda f: f.stat.st_size)
+    dupes = _sift(_bufferedfiles(pathstosearch), lambda f: f.stat.st_size)
     return dupes
 
 def _comparefilechunk(filestocompare: frozenset[BufferedIOFile]) -> set[frozenset[BufferedIOFile]]:

@@ -60,7 +60,7 @@ class TestPrintoutcontents_frompath:
     }
     
     def act(testfiles):
-        duplicatefiles = DuplicateFiles.frompath(testfiles.root)
+        duplicatefiles = DuplicateFiles.frompaths(testfiles.root)
         return duplicatefiles.printout()
     def test_correctnumberofblocks(self):
         assert len(self.stringblocks) == len(self.filegroups)
@@ -88,7 +88,7 @@ class TestPrintoutcontents_Ignoresamenames():
     }
 
     def act(testfiles):
-        duplicatefiles = DuplicateFiles.frompath(testfiles.root)
+        duplicatefiles = DuplicateFiles.frompaths(testfiles.root)
         return duplicatefiles.printout(ignoresamenames=True)
 
     def test_correctnumberofblocks(self):
