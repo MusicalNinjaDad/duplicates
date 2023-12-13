@@ -88,3 +88,11 @@ def test_instantiate_dropsymlinks(copiedtestfiles):
         symlink.symlink_to(fileA)
     duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
     assert duplicatefiles.duplicates == {frozenset(path for path in copiedtestfiles.paths['fileA'])}, f'Following files identified as duplicates: {duplicatefiles.duplicates}'
+
+@mark.copyfiles(('fileA',1), ('fileB',2))
+@mark.linkfiles(('fileA',2))
+def test_somefilesalreadyprocessed(copiedtestfiles):
+    identicalfiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    assert identicalfiles.duplicates == {
+        frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileB'])
+    }

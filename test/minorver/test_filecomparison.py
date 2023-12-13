@@ -45,3 +45,26 @@ def test_indexbyino(copiedtestfiles):
     assert len(inoindex) == 2
     assert {copiedtestfiles.paths['fileA'][0], copiedtestfiles.paths['fileA'][2]} in inoindex.values()
     assert {copiedtestfiles.paths['fileA'][1]} in inoindex.values()
+
+@mark.copyfiles(('fileA',1))
+@mark.linkfiles(('fileA',2))
+def test_dontscanoridentifyifonlylinks(copiedtestfiles):
+    """This can waste a lot of time if there are files which have already been processed by a previous run of dupes and no new copies are present.
+    """
+    class InvalidCallToOpenError(Exception):
+            pass
+    
+    @contextmanager
+    def _dontopen(self):
+        raise InvalidCallToOpenError
+    
+    from ...duplicates.bufferediofile import BufferedIOFile
+    BufferedIOFile.open = _dontopen
+    
+    # Validating monkeypatch worked
+    t = BufferedIOFile(copiedtestfiles.paths['fileA'][0])
+    with raises(InvalidCallToOpenError), t.open():
+        assert True
+
+    duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    assert not duplicatefiles.duplicates

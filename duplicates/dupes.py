@@ -28,9 +28,11 @@ class DuplicateFiles:
         dupes = set()
         for fileset in samesizefiles:
             nohardlinks = fileset.intersection(uniqueinos)
-            with ExitStack() as stack:
-                _ = [stack.enter_context(file.open()) for file in nohardlinks]
-                dupes |= comparefilecontents({frozenset(nohardlinks)})
+            if len(nohardlinks) > 1:
+                with ExitStack() as stack:
+                    _ = [stack.enter_context(file.open()) for file in nohardlinks]
+                    dupes |= comparefilecontents({frozenset(nohardlinks)})
+                    
         alldupes = {file for fileset in dupes for file in fileset}
         totalsize = sum(file.stat.st_size for file in alldupes)
         futuresize = sum(next(iter(group)).stat.st_size for group in dupes)
