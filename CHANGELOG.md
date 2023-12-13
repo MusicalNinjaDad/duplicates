@@ -1,5 +1,10 @@
 # CHANGELOG - Link Duplicates
 
+## 0.3.0 - speed improvements
+
+- speed up cases where reprocessing after a previous run
+- add totals to info output
+
 ## v0.2.3
 
 - add timestamps to status output
