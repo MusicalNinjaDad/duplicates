@@ -96,3 +96,10 @@ def test_somefilesalreadyprocessed(copiedtestfiles):
     assert identicalfiles.duplicates == {
         frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileB'])
     }
+
+@mark.copyfiles(
+    set1 = (('fileA',1), ('fileB',2)),
+    set2 = (('fileA2',2), ('fileB',2))
+    )
+def test_nocommonroot(copiedtestfiles):
+    pass
