@@ -26,3 +26,20 @@ def test_link_duplicatefileswithmultiplegroupsoflinks(copiedtestfiles):
     assert all(
         inoscorrect.values()
     ), f'{inoscorrect}'
+
+@mark.copyfiles(('fileA',1))
+@mark.linkfiles(('fileA',2))
+def test_donothingifonlylinks(copiedtestfiles, monkeypatch):
+    class InvalidCallToReplaceWithLinkError(Exception):
+            pass
+    
+    @contextmanager
+    def _dontlink(keep, link):
+        raise InvalidCallToReplaceWithLinkError
+    
+    from ...duplicates import dupes
+    monkeypatch.setattr(dupes, "_replacewithlink", _dontlink)
+    # Monkeypatch was validated by adding an extra set of files which did need linking
+    
+    duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    duplicatefiles.link()

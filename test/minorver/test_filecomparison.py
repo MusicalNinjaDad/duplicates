@@ -48,7 +48,7 @@ def test_indexbyino(copiedtestfiles):
 
 @mark.copyfiles(('fileA',1))
 @mark.linkfiles(('fileA',2))
-def test_dontscanoridentifyifonlylinks(copiedtestfiles):
+def test_dontscanoridentifyifonlylinks(copiedtestfiles, monkeypatch):
     """This can waste a lot of time if there are files which have already been processed by a previous run of dupes and no new copies are present.
     """
     class InvalidCallToOpenError(Exception):
@@ -59,7 +59,7 @@ def test_dontscanoridentifyifonlylinks(copiedtestfiles):
         raise InvalidCallToOpenError
     
     from ...duplicates.bufferediofile import BufferedIOFile
-    BufferedIOFile.open = _dontopen
+    monkeypatch.setattr(BufferedIOFile, 'open', _dontopen)
     
     # Validating monkeypatch worked
     t = BufferedIOFile(copiedtestfiles.paths['fileA'][0])
