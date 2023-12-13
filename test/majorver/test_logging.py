@@ -12,8 +12,8 @@ def test_instantiatefrompath(copiedtestfiles, caplog):
 
     expectedmessages = [
         f'Initiating search of {copiedtestfiles.root}',
-        f'Found 1 groups of same-sized files',
-        f'Identified 1 pre-existing hard links',
+        f'Found 1 groups of same-sized files, totalling 4 files',
+        f'Identified 1 pre-existing hard links, leaving 3 files for comparison',
         f'Will now begin comparing file contents, this may take some time',
         f'Identified 1 sets of duplicate files, totalling 2 files',
         f'Current usage: 32, future usage: 16, saving: 16'
