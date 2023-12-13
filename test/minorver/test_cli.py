@@ -129,3 +129,27 @@ def test_nolink(copiedtestfiles):
     newinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
 
     assert newinos == originalinos
+
+@mark.copyfiles(
+    set1 = (('fileA',1), ('fileB',2)),
+    set2 = (('fileA2',2), ('fileB',2))
+    )
+def test_nolink(copiedtestfiles):
+    clirunner = CliRunner()
+    command = [
+        os.fspath(copiedtestfiles['set1'].root),
+        os.fspath(copiedtestfiles['set2'].root)
+    ]
+
+    result = clirunner.invoke(dupes, command)
+
+    output = [
+        f'Initiating search of {copiedtestfiles['set1'].root}, {copiedtestfiles['set2'].root}',
+        f'Found 2 groups of same-sized files, totalling 7 files',
+        f'Identified 0 pre-existing hard links, leaving 7 files for comparison',
+        f'Will now begin comparing file contents, this may take some time',
+        f'Identified 2 sets of duplicate files, totalling 6 files',
+        f'Current usage: 124, future usage: 39, saving: 85'
+    ]
+
+    assert [removetimestamp(s.strip()) for s in result.output.strip().split('\n')] == output

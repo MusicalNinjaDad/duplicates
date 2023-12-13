@@ -9,12 +9,12 @@ from . import DuplicateFiles, LOGROOT
 _logger = logging.getLogger(LOGROOT)
 
 @command()
-@argument('rootdir')
+@argument('rootdirs', nargs=-1)
 @option('--link', is_flag=True)
 @option('-y', 'approved', is_flag=True)
 @option('--list', '_list', is_flag=True)
 @option('--short', is_flag=True)
-def dupes(rootdir, link, approved, _list, short):
+def dupes(rootdirs, link, approved, _list, short):
     _logger.setLevel(logging.INFO)
     consoleoutput = logging.StreamHandler()
     consoleoutput.setLevel(logging.INFO)
@@ -23,8 +23,8 @@ def dupes(rootdir, link, approved, _list, short):
     consoleoutput.setFormatter(outputformat)
     _logger.addHandler(consoleoutput)
 
-    rootdir = Path(rootdir)
-    duplicatefiles = DuplicateFiles.frompaths(rootdir)
+    rootdirs = [Path(rootdir) for rootdir in rootdirs]
+    duplicatefiles = DuplicateFiles.frompaths(*rootdirs)
     
     if short:
         print(duplicatefiles.printout(ignoresamenames=True))
@@ -35,6 +35,6 @@ def dupes(rootdir, link, approved, _list, short):
         if not approved:
             confirm('Link files?', abort=True, err=True) 
             print('', file=sys.stderr) #prompting to stderr doesn't echo input (including \n)
-        _logger.info(f'Linking files in {os.fspath(rootdir)} ...')
+        _logger.info(f'Linking files in {', '.join(os.fspath(p) for p in rootdirs)} ...')
         duplicatefiles.link()
         _logger.info(f'Done')
