@@ -39,11 +39,11 @@ class BufferedIOFile():
         try:
             return self.__stat
         except AttributeError:
-            self.refreshstat()
-            return self.__stat
+            return self.refreshstat()
         
     def refreshstat(self):
         self.__stat = self.path.stat()
+        return self.__stat
 
     def __str__(self) -> str:
         return str(self.path)
