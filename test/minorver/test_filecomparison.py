@@ -1,7 +1,6 @@
 from . import *
 from ...duplicates.dupes import _comparefilechunk, _indexbyino, _filesofsamesize
 
-# @mark.skip('Deprecated')
 @mark.copyfiles(('fileA',2))
 def test_fileissamesize(copiedtestfiles):
     duplicatefiles = _filesofsamesize((copiedtestfiles.root,))
