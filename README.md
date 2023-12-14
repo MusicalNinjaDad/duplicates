@@ -12,19 +12,23 @@ Intended to be used to reduce the storage space taken up by mutliple copies of s
 
 Can be run from a command line in Linux, MacOS or Windows and will recursively scan a directory, identify and optionally hardlink any duplicate files found.
 
-WARNING: Hardlinking files means if you change any one "copy" all "copies" will change.
+**WARNING:** Hardlinking files means if you change any one "copy" all "copies" will change.
+
+**WARNING:** If other hardlinks are present _outside_ the directories scanned, these may no longer point to the same inode as those within the scanned directories. Consider the situation as _undefined_.
 
 ### Command line
 
-`dupes PATH` will display number of duplicate files found under PATH
+`dupes PATH` will display number of duplicate files found under `PATH`
 
-`dupes --list PATH` will list the full sets of duplicate files found
+`dupes PATH1 PATH2 ...` will display number of duplicate files found under _and across_ `PATH1` and `PATH2`
 
-`dupes --short PATH` will only list sets of duplicates where there are different file names
+`dupes --list PATHS...` will list the full sets of duplicate files found
+
+`dupes --short PATHS...` will only list sets of duplicates where there are different file names
 
 and finally ...
 
-`dupes --link PATH` will replace duplicate files with hard links
+`dupes --link PATHS...` will replace duplicate files with hard links
 
 ### Python
 

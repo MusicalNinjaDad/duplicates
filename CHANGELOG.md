@@ -1,5 +1,11 @@
 # CHANGELOG - Link Duplicates
 
+## 0.4.0 - multiple paths
+
+- allow multiple paths to be passed at command line
+- allow multiple paths to be passed to `DuplicateFiles.frompath()` and therefore rename it to `DuplicateFiles.frompaths()`
+- check that all paths are on same filesystem, otherwise hard linking is not possible
+
 ## 0.3.0 - speed improvements
 
 - speed up cases where reprocessing after a previous run

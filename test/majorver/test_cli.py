@@ -68,3 +68,19 @@ def test_nolink(copiedtestfiles):
     newinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
 
     assert newinos == originalinos
+
+def test_version():
+    
+    command = [
+        'dupes',
+        '--version'
+    ]
+
+    completed = run(command, capture_output=True)
+
+    with open('./__version__') as versionfile:
+        version = versionfile.readline()
+
+    stdout = [s.strip() for s in completed.stdout.decode().strip().split('\n')]
+
+    assert any(version in line for line in stdout)

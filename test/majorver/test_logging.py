@@ -6,7 +6,7 @@ import logging
 @mark.linkfiles(('fileA', 1))
 def test_instantiatefrompath(copiedtestfiles, caplog):
     caplog.set_level(logging.INFO, logger='dupes')
-    _ = DuplicateFiles.frompath(copiedtestfiles.root)
+    _ = DuplicateFiles.frompaths(copiedtestfiles.root)
     logs = [record for record in caplog.records if record.name.startswith(LOGROOT)]
     logmessages = [record.message for record in logs]
 

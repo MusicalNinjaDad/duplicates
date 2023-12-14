@@ -3,13 +3,13 @@ from ...duplicates.dupes import _comparefilechunk, _indexbyino, _filesofsamesize
 
 @mark.copyfiles(('fileA',2))
 def test_fileissamesize(copiedtestfiles):
-    duplicatefiles = _filesofsamesize(copiedtestfiles.root)
+    duplicatefiles = _filesofsamesize((copiedtestfiles.root,))
     assert duplicatefiles == {frozenset((copiedtestfiles.paths['fileA'][0], copiedtestfiles.paths['fileA'][1]))}
 
 @mark.copyfiles(('fileA',2))
 def test_zerosizefile(copiedtestfiles):
     with open(copiedtestfiles.root / Path("file0"), 'w'): pass
-    duplicatefiles = _filesofsamesize(copiedtestfiles.root)
+    duplicatefiles = _filesofsamesize((copiedtestfiles.root,))
     assert duplicatefiles == {frozenset((copiedtestfiles.paths['fileA'][0], copiedtestfiles.paths['fileA'][1]))}
 
 @mark.copyfiles(('fileA',2))
@@ -66,5 +66,5 @@ def test_dontscanoridentifyifonlylinks(copiedtestfiles, monkeypatch):
     with raises(InvalidCallToOpenError), t.open():
         assert True
 
-    duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    duplicatefiles = DuplicateFiles.frompaths(copiedtestfiles.root)
     assert not duplicatefiles.duplicates

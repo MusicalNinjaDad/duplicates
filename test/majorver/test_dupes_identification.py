@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from . import *
 
 @mark.copyfiles(('fileA',2), ('fileA2',3))
@@ -33,7 +34,7 @@ def test_comparefilecontents_filehasnoduplicate(copiedtestfiles, filesopen):
 @mark.copyfiles(('fileA',2), ('fileB', 1), ('fileA2', 1))
 @mark.linkfiles(('fileA',1))
 def test_instantiatefrompath(copiedtestfiles):
-    duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    duplicatefiles = DuplicateFiles.frompaths(copiedtestfiles.root)
     assert any((
         duplicatefiles.duplicates == {frozenset((
                                 BufferedIOFile(copiedtestfiles.paths['fileA'][1]),
@@ -50,7 +51,7 @@ def test_instantiatefrompath(copiedtestfiles):
 
 @mark.copyfiles(('fileA',2), ('fileA2',1), ('fileB', 4))
 def test_instantiatefrompath_multipleduplicatefiles(copiedtestfiles):
-    identicalfiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    identicalfiles = DuplicateFiles.frompaths(copiedtestfiles.root)
     assert identicalfiles.duplicates == {
         frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileA']),
         frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileB'])
@@ -59,7 +60,7 @@ def test_instantiatefrompath_multipleduplicatefiles(copiedtestfiles):
 @mark.copyfiles(('fileA',2), ('fileA2',1), ('fileB', 4))
 def test_instantiatefrompath_zerosizefile(copiedtestfiles):
     with open(copiedtestfiles.root / Path("file0"), 'w'): pass
-    identicalfiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    identicalfiles = DuplicateFiles.frompaths(copiedtestfiles.root)
     assert identicalfiles.duplicates == {
         frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileA']),
         frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileB'])
@@ -75,7 +76,7 @@ def test_multiplezerosizefiles(copiedtestfiles):
     for path in zerolengthfilepaths:
         with open(path, 'w'): pass
 
-    identicalfiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    identicalfiles = DuplicateFiles.frompaths(copiedtestfiles.root)
     assert identicalfiles.duplicates == {
         frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileA'])
     }
@@ -86,13 +87,13 @@ def test_instantiate_dropsymlinks(copiedtestfiles):
     symlink = copiedtestfiles.root / Path('linktoA.txt')
     with skipon(OSError, lambda e: e.winerror == 1314, 'SymLinks not available on Windows without DevMode enabled'):
         symlink.symlink_to(fileA)
-    duplicatefiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    duplicatefiles = DuplicateFiles.frompaths(copiedtestfiles.root)
     assert duplicatefiles.duplicates == {frozenset(path for path in copiedtestfiles.paths['fileA'])}, f'Following files identified as duplicates: {duplicatefiles.duplicates}'
 
 @mark.copyfiles(('fileA',1), ('fileB',2))
 @mark.linkfiles(('fileA',2))
 def test_somefilesalreadyprocessed(copiedtestfiles):
-    identicalfiles = DuplicateFiles.frompath(copiedtestfiles.root)
+    identicalfiles = DuplicateFiles.frompaths(copiedtestfiles.root)
     assert identicalfiles.duplicates == {
         frozenset(BufferedIOFile(path) for path in copiedtestfiles.paths['fileB'])
     }
@@ -102,4 +103,41 @@ def test_somefilesalreadyprocessed(copiedtestfiles):
     set2 = (('fileA2',2), ('fileB',2))
     )
 def test_nocommonroot(copiedtestfiles):
-    pass
+    identicalfiles = DuplicateFiles.frompaths(
+        copiedtestfiles['set1'].root,
+        copiedtestfiles['set2'].root
+    )
+
+    fileA2 = frozenset(
+        BufferedIOFile(path) 
+        for path
+        in copiedtestfiles['set2'].paths['fileA2']
+    )
+
+
+    fileB = frozenset(
+        BufferedIOFile(path) 
+        for path
+        in copiedtestfiles['set1'].paths['fileB'] + copiedtestfiles['set2'].paths['fileB']
+    )
+
+    assert identicalfiles.duplicates == {fileA2, fileB}
+
+@mark.copyfiles(
+    set1 = (('fileA',1), ('fileB',2)),
+    set2 = (('fileA2',2), ('fileB',2))
+    )
+def test_differentfilesystems(copiedtestfiles):
+
+    class _Path(Path):
+        def stat(self):
+            @dataclass
+            class _fakestat():
+                st_dev: int
+            return _fakestat(st_dev=uuid1())
+
+    with raises(InvalidFileSystemError):
+        _ = DuplicateFiles.frompaths(
+            _Path(copiedtestfiles['set1'].root),
+            _Path(copiedtestfiles['set2'].root)
+        )

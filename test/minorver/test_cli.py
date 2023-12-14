@@ -1,6 +1,7 @@
+from dataclasses import dataclass
 import os
 from pytest import mark
-from ...duplicates.cli import dupes
+from ...duplicates import cli 
 from click.testing import CliRunner
 from . import removetimestamp
 
@@ -12,7 +13,7 @@ def test_link(copiedtestfiles):
         '-y',
         os.fspath(copiedtestfiles.root)
     ]
-    result = clirunner.invoke(dupes, command)
+    result = clirunner.invoke(cli.dupes, command)
 
     output = [
         f'Initiating search of {copiedtestfiles.root}',
@@ -46,7 +47,7 @@ def test_linkapproved(copiedtestfiles):
         '--link',
         os.fspath(copiedtestfiles.root)
     ]
-    result = clirunner.invoke(dupes, command, input='y')
+    result = clirunner.invoke(cli.dupes, command, input='y')
 
     output = [
         f'Initiating search of {copiedtestfiles.root}',
@@ -82,7 +83,7 @@ def test_link_abort(copiedtestfiles):
         '--link',
         os.fspath(copiedtestfiles.root)
     ]
-    result = clirunner.invoke(dupes, command, input='n')
+    result = clirunner.invoke(cli.dupes, command, input='n')
 
     output = [
         f'Initiating search of {copiedtestfiles.root}',
@@ -113,7 +114,7 @@ def test_nolink(copiedtestfiles):
         os.fspath(copiedtestfiles.root)
     ]
 
-    result = clirunner.invoke(dupes, command)
+    result = clirunner.invoke(cli.dupes, command)
 
     output = [
         f'Initiating search of {copiedtestfiles.root}',
@@ -129,3 +130,58 @@ def test_nolink(copiedtestfiles):
     newinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
 
     assert newinos == originalinos
+
+@mark.copyfiles(
+    set1 = (('fileA',1), ('fileB',2)),
+    set2 = (('fileA2',2), ('fileB',2))
+    )
+def test_multiplepaths(copiedtestfiles):
+    clirunner = CliRunner()
+    command = [
+        os.fspath(copiedtestfiles['set1'].root),
+        os.fspath(copiedtestfiles['set2'].root)
+    ]
+
+    result = clirunner.invoke(cli.dupes, command)
+
+    output = [
+        f'Initiating search of {copiedtestfiles['set1'].root}, {copiedtestfiles['set2'].root}',
+        f'Found 2 groups of same-sized files, totalling 7 files',
+        f'Identified 0 pre-existing hard links, leaving 7 files for comparison',
+        f'Will now begin comparing file contents, this may take some time',
+        f'Identified 2 sets of duplicate files, totalling 6 files',
+        f'Current usage: 124, future usage: 39, saving: 85'
+    ]
+
+    assert [removetimestamp(s.strip()) for s in result.output.strip().split('\n')] == output
+
+@mark.copyfiles(
+    set1 = (('fileA',1), ('fileB',2)),
+    set2 = (('fileA2',2), ('fileB',2))
+    )
+def test_differentfilesystems(copiedtestfiles, monkeypatch):
+
+    def _returnfakestat(*args, **kwargs):
+        from uuid import uuid1
+        @dataclass
+        class _fakestat():
+            st_dev: int
+
+        return _fakestat(st_dev=uuid1())
+
+    monkeypatch.setattr(cli.Path, 'stat', _returnfakestat)
+
+    clirunner = CliRunner()
+    command = [
+        os.fspath(copiedtestfiles['set1'].root),
+        os.fspath(copiedtestfiles['set2'].root)
+    ]
+
+    result = clirunner.invoke(cli.dupes, command)
+
+    output = [
+        f'{copiedtestfiles['set1'].root}, {copiedtestfiles['set2'].root} are not on the same filesystem',
+        'Aborted!'
+    ]
+
+    assert [s.strip() for s in result.output.strip().split('\n')] == output
