@@ -36,10 +36,7 @@ class BufferedIOFile():
     
     @property
     def stat(self):
-        try:
-            return self.__stat
-        except AttributeError:
-            return self.refreshstat()
+        return self.__stat
         
     def refreshstat(self):
         self.__stat = self.path.stat()
