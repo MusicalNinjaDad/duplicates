@@ -1,5 +1,7 @@
 # CHANGELOG - Link Duplicates
 
+## 0.4.0 - multiple paths
+
 - allow multiple paths to be passed to `DuplicateFiles.frompath()` and therefore rename it to `DuplicateFiles.frompaths()`
 
 ## 0.3.0 - speed improvements
