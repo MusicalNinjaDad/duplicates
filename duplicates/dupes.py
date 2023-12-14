@@ -13,11 +13,14 @@ class DuplicateFiles:
 
     @classmethod
     def frompaths(cls, *rootpaths: Path):
+        
+        if len({path.stat().st_dev for path in rootpaths}) > 1: 
+            raise InvalidFileSystemError('All paths must be on the same filesystem')
+        
         _logger = logging.getLogger(f'{LOGROOT}.frompath')
         _logger.info(f'Initiating search of {', '.join(str(p) for p in rootpaths)}')
         
         samesizefiles = _filesofsamesize(rootpaths)
-
         allfiles = {file for fileset in samesizefiles for file in fileset}
         _logger.info(f'Found {len(samesizefiles)} groups of same-sized files, totalling {len(allfiles)} files')
 
@@ -94,6 +97,9 @@ def comparefilecontents(setstocompare: set[frozenset[BufferedIOFile]]) -> set[fr
         except EOFError:
             duplicates.add(setoffiles)
     return duplicates
+
+class InvalidFileSystemError(Exception):
+    pass
 
 def _replacewithlink(keep: Path, replace: Path) -> None:
     def _extendpath(self: Path, string: Any) -> Path:

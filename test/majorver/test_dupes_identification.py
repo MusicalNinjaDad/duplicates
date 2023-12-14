@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from . import *
 
 @mark.copyfiles(('fileA',2), ('fileA2',3))
@@ -121,3 +122,27 @@ def test_nocommonroot(copiedtestfiles):
     )
 
     assert identicalfiles.duplicates == {fileA2, fileB}
+
+@mark.copyfiles(
+    set1 = (('fileA',1), ('fileB',2)),
+    set2 = (('fileA2',2), ('fileB',2))
+    )
+def test_differentdevices(copiedtestfiles, monkeypatch):
+
+    def _returnfakestat(*args, **kwargs):
+        from datetime import datetime
+        @dataclass
+        class _fakestat():
+            st_dev: int
+
+        now = datetime.now().timestamp        
+
+        return _fakestat(st_dev=now())
+
+    monkeypatch.setattr(Path, 'stat', _returnfakestat)
+    
+    with raises(InvalidFileSystemError):
+        _ = DuplicateFiles.frompaths(
+            copiedtestfiles['set1'].root,
+            copiedtestfiles['set2'].root
+        )
