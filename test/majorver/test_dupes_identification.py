@@ -127,22 +127,17 @@ def test_nocommonroot(copiedtestfiles):
     set1 = (('fileA',1), ('fileB',2)),
     set2 = (('fileA2',2), ('fileB',2))
     )
-def test_differentdevices(copiedtestfiles, monkeypatch):
+def test_differentfilesystems(copiedtestfiles):
 
-    def _returnfakestat(*args, **kwargs):
-        from datetime import datetime
-        @dataclass
-        class _fakestat():
-            st_dev: int
+    class _Path(Path):
+        def stat(self):
+            @dataclass
+            class _fakestat():
+                st_dev: int
+            return _fakestat(st_dev=uuid1())
 
-        now = datetime.now().timestamp        
-
-        return _fakestat(st_dev=now())
-
-    monkeypatch.setattr(Path, 'stat', _returnfakestat)
-    
     with raises(InvalidFileSystemError):
         _ = DuplicateFiles.frompaths(
-            copiedtestfiles['set1'].root,
-            copiedtestfiles['set2'].root
+            _Path(copiedtestfiles['set1'].root),
+            _Path(copiedtestfiles['set2'].root)
         )

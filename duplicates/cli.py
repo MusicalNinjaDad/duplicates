@@ -2,9 +2,9 @@ import logging
 import os
 from pathlib import Path
 import sys
-from click import argument, command, confirm, option, version_option
+from click import Abort, argument, command, confirm, option, version_option
 
-from . import DuplicateFiles, LOGROOT
+from . import DuplicateFiles, InvalidFileSystemError, LOGROOT
 
 _logger = logging.getLogger(LOGROOT)
 
@@ -25,7 +25,12 @@ def dupes(rootdirs, link, approved, _list, short):
     _logger.addHandler(consoleoutput)
 
     rootdirs = [Path(rootdir) for rootdir in rootdirs]
-    duplicatefiles = DuplicateFiles.frompaths(*rootdirs)
+    
+    try:
+        duplicatefiles = DuplicateFiles.frompaths(*rootdirs)
+    except InvalidFileSystemError:
+        print(f'{', '.join(os.fspath(p) for p in rootdirs)} are not on the same filesystem')
+        raise Abort
     
     if short:
         print(duplicatefiles.printout(ignoresamenames=True))

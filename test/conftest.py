@@ -1,10 +1,10 @@
-import os
 import uuid
 from collections import defaultdict
 from contextlib import ExitStack
 from dataclasses import dataclass
 from io import BufferedIOBase
 from pathlib import Path
+from shutil import copyfile
 
 from pytest import fixture
 
@@ -19,20 +19,6 @@ def pytest_configure(config):
             config.addinivalue_line("markers", mark)
 
     addmarkers(marks)
-
-def _copy(self: Path, target: Path) -> None:
-    from shutil import copyfile, copytree
-    if self.is_dir():
-        copytree(self, target / self.name)
-    else:
-        copyfile(self, target / self.name) #If later needed can use newname = self.name: str as optional arg
-
-def _copyfrom(self: Path, source: Path) -> None:
-    from shutil import copyfile
-    copyfile(source, self)
-
-Path.copy = _copy
-Path.copyfrom = _copyfrom
 
 @dataclass
 class Testfiles():
@@ -88,7 +74,7 @@ def copytestfiles(request, tmp_path, filestocopy) -> Testfiles:
             uniquedir = tmp_path / str(uuid.uuid1())
             uniquedir.mkdir()
             newfile = tmp_path / uniquedir / sourcefiles.paths[fileid].name
-            newfile.copyfrom(sourcefiles.paths[fileid])
+            copyfile(sourcefiles.paths[fileid],newfile)
             tmp_files.paths[fileid].append(newfile)
     filestolink = request.node.get_closest_marker('linkfiles')
     if filestolink:
