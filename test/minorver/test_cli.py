@@ -134,7 +134,7 @@ def test_nolink(copiedtestfiles):
     set1 = (('fileA',1), ('fileB',2)),
     set2 = (('fileA2',2), ('fileB',2))
     )
-def test_nolink(copiedtestfiles):
+def test_multiplepaths(copiedtestfiles):
     clirunner = CliRunner()
     command = [
         os.fspath(copiedtestfiles['set1'].root),
@@ -153,3 +153,4 @@ def test_nolink(copiedtestfiles):
     ]
 
     assert [removetimestamp(s.strip()) for s in result.output.strip().split('\n')] == output
+
