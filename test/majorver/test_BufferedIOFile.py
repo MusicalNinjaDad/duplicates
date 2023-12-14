@@ -41,6 +41,14 @@ def test_equal_relativepathsgiven():
     assert file == path
     assert file == 'test/data'
 
+def test_equal_notalwaystrue():
+    path = Path('test/data')
+    file = BufferedIOFile(path)
+    assert file != path / Path('foo')
+    assert file != 'test/data/foo'
+    assert file != 6
+
+
 @mark.copyfiles(('fileA',1))
 def test_equal_pathsresolved(copiedtestfiles):
     fileA = copiedtestfiles.paths['fileA'][0]
