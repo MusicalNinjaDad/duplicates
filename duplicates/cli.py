@@ -2,7 +2,7 @@ import logging
 import os
 from pathlib import Path
 import sys
-from click import argument, command, confirm, option
+from click import argument, command, confirm, option, version_option
 
 from . import DuplicateFiles, LOGROOT
 
@@ -14,6 +14,7 @@ _logger = logging.getLogger(LOGROOT)
 @option('-y', 'approved', is_flag=True)
 @option('--list', '_list', is_flag=True)
 @option('--short', is_flag=True)
+@version_option(package_name='link_duplicates')
 def dupes(rootdirs, link, approved, _list, short):
     _logger.setLevel(logging.INFO)
     consoleoutput = logging.StreamHandler()
