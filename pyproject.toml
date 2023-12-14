@@ -46,7 +46,7 @@ dupes = 'duplicates.cli:dupes'
 
 [tool.pytest.ini_options]
 xfail_strict=true
-addopts = '-m "not tox"'
+addopts = '-m "not tox" --cov=duplicates'
 markers = [
     'tox: tests must run in a tox environment'
     ]
