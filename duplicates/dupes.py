@@ -64,7 +64,7 @@ class DuplicateFiles:
     def link(self) -> None:
         for setoffiles in self.duplicates:
             theseinos = {file.stat.st_ino for file in setoffiles}
-            fileentrycount = {len(entries): next(iter(entries)) for ino, entries in self._inoindex.items() if ino in theseinos}
+            fileentrycount = {len(self._inoindex[ino]): next(iter(self._inoindex[ino])) for ino in theseinos}
             filetokeep = fileentrycount[max(fileentrycount)]
             for mainfiletolink in setoffiles:
                 if not mainfiletolink.stat.st_ino == filetokeep.stat.st_ino:
