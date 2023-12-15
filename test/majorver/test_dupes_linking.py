@@ -44,6 +44,40 @@ def test_donothingifonlylinks(copiedtestfiles, monkeypatch):
     duplicatefiles = DuplicateFiles.frompaths(copiedtestfiles.root)
     duplicatefiles.link()
 
+@mark.copyfiles(('fileA', 2), ('fileA-copy', 1))
+@mark.linkfiles(('fileA', 2), ('fileA-copy', 1))
+def test_link_keepinodewithmostentries(copiedtestfiles):
+    """fileA and fileA-copy are identical and BOTH have multiple copies AND multiple hardlinks
+    """
+    expectedino=copiedtestfiles.paths['fileA'][-1].stat().st_ino
+    
+    dupes = DuplicateFiles.frompaths(copiedtestfiles.root)
+    dupes.link()
+    inoscorrect = {(fileid, i): file.stat().st_ino == expectedino for fileid in ('fileA', 'fileA-copy') for i, file in enumerate(copiedtestfiles.paths[fileid])}
+    assert all(
+        inoscorrect.values()
+    ), f'{inoscorrect}'
+
+@mark.copyfiles(('fileA', 2), ('fileA-copy', 1), ('fileA2',2), ('fileB',2))
+@mark.linkfiles(('fileA', 2), ('fileA-copy', 1), ('fileB',1))
+def test_link_complexcase(copiedtestfiles):
+    """fileA and fileA-copy are identical and BOTH have multiple copies AND multiple hardlinks
+    fileA2 is the same size as fileA but different contents
+    fileB also has copies and links
+
+    fileA/fileA-copy will keep the inode from the fileA links (3 filesys entries)
+    fileB will keep the inode from the link (2 entries)
+    fileA2 is undefined
+    """
+    expectedinoA=copiedtestfiles.paths['fileA'][-1].stat().st_ino
+    expectedinoB=copiedtestfiles.paths['fileB'][-1].stat().st_ino
+    dupes = DuplicateFiles.frompaths(copiedtestfiles.root)
+    dupes.link()
+    assert all(file.stat().st_ino == expectedinoA for file in copiedtestfiles.paths['fileA'])
+    assert all(file.stat().st_ino == expectedinoA for file in copiedtestfiles.paths['fileA-copy'])
+    assert all(file.stat().st_ino == expectedinoB for file in copiedtestfiles.paths['fileB'])
+    assert len({file.stat().st_ino for file in copiedtestfiles.paths['fileA2']}) == 1
+
 @mark.copyfiles(
     set1 = (('fileA',1), ('fileB',2)),
     set2 = (('fileA2',2), ('fileB',2))

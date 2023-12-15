@@ -63,12 +63,14 @@ class DuplicateFiles:
     
     def link(self) -> None:
         for setoffiles in self.duplicates:
-            fileiterator = iter(setoffiles)
-            filetokeep = next(fileiterator)
-            for mainfiletolink in fileiterator:
-                inotolink = self._inoindex[mainfiletolink.stat.st_ino]
-                for filetolink in inotolink:
-                    _replacewithlink(filetokeep.path, filetolink.path)
+            theseinos = {file.stat.st_ino for file in setoffiles}
+            fileentrycount = {len(entries): next(iter(entries)) for ino, entries in self._inoindex.items() if ino in theseinos}
+            filetokeep = fileentrycount[max(fileentrycount)]
+            for mainfiletolink in setoffiles:
+                if not mainfiletolink.stat.st_ino == filetokeep.stat.st_ino:
+                    inotolink = self._inoindex[mainfiletolink.stat.st_ino]
+                    for filetolink in inotolink:
+                        _replacewithlink(filetokeep.path, filetolink.path)
 
     def printout(self, *_, ignoresamenames: bool = False) -> str:
         if _:
