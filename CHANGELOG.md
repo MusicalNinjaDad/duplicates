@@ -1,5 +1,9 @@
 # CHANGELOG - Link Duplicates
 
+## v1.0.1
+
+- [Select leading inode for linking](https://github.com/MusicalNinjaRandInt/duplicates/issues/14) automatically to reduce number of IO activities
+
 ## v1.0.0
 
 - In general: all arguments with default values are now keyword only (may not apply to anything with a `_` prefix)
