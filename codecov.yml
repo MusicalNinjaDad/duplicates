@@ -1,12 +1,12 @@
 coverage:
   precision: 2
   round: nearest
-  range: 95..98
+  range: 95..100
   status:
     project:
       default:
-        target: 98%    # the required coverage value
-        threshold: 3%  # the leniency in hitting the target
+        target: 100%    # the required coverage value
+        threshold: 5%  # the leniency in hitting the target
         informational: true
     patch:
       default:
