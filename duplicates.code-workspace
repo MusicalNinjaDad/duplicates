@@ -7,6 +7,7 @@
 	"settings": {
 		"black-formatter.args": [
 			"-S"
-		]
+		],
+		"gitlens.codeLens.enabled": false
 	}
 }

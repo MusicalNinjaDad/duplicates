@@ -1,0 +1,17 @@
+coverage:
+  precision: 2
+  round: nearest
+  range: 95..100
+  status:
+    project:
+      default:
+        target: 100%    # the required coverage value
+        threshold: 5%  # the leniency in hitting the target
+        informational: true
+    patch:
+      default:
+        target: 100%
+        threshold: 1%
+        informational: true
+codecov:
+  require_ci_to_pass: false

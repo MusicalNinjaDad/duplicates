@@ -8,7 +8,7 @@ def test_comparefilecontents(copiedtestfiles, filesopen):
         (copiedtestfiles.handles['fileA'] + copiedtestfiles.handles['fileA2'])
     )
     filestocompare = {frozenset(
-        BufferedIOFile(path_handle[0], path_handle[1]) for path_handle in pathsandhandles
+        BufferedIOFile(path_handle[0], handle=path_handle[1]) for path_handle in pathsandhandles
     )}
     identicalfiles = comparefilecontents(filestocompare)
     assert identicalfiles == {
@@ -23,7 +23,7 @@ def test_comparefilecontents_filehasnoduplicate(copiedtestfiles, filesopen):
         (copiedtestfiles.handles['fileA'] + copiedtestfiles.handles['fileA2'] + copiedtestfiles.handles['fileB'])
     )
     filestocompare = {frozenset(
-        BufferedIOFile(path_handle[0], path_handle[1]) for path_handle in pathsandhandles
+        BufferedIOFile(path_handle[0], handle=path_handle[1]) for path_handle in pathsandhandles
     )}
     identicalfiles = comparefilecontents(filestocompare)
     assert identicalfiles == {

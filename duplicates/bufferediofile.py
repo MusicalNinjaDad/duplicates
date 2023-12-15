@@ -12,7 +12,18 @@ class BufferedIOFile():
     """
     MB = 1024**2
 
-    def __init__(self, path: Path, handle: BufferedIOBase = None, chunksize: int = 100*MB, follow_symlinks=False):
+    def __init__(self, path: Path, *_, handle: BufferedIOBase = None, chunksize: int = 100*MB, follow_symlinks=False):
+        """Argument:
+        - path: A pathlib Path for the file. (Must implement the `resolve()` method)
+        
+        Keyword arguments (all are optional and keyword-only):
+        - handle: an open file handle if present. (default `None`)
+        - chunksize: size of chunk to use for `readchunk()` in bytes. (default: 100MB)
+        - follow-symlinks: whether to treat symlinks as files or follow them (analog `os` functions). (default: False).
+        Will raise a `NotImplementedError` if set to `True`
+        """
+        if _:
+            raise TypeError(f'BufferedIOFile() takes exactly one non-keyword argument ({len(_) + 1} given)')
         if follow_symlinks:
             raise NotImplementedError
         
@@ -36,10 +47,7 @@ class BufferedIOFile():
     
     @property
     def stat(self):
-        try:
-            return self.__stat
-        except AttributeError:
-            return self.refreshstat()
+        return self.__stat
         
     def refreshstat(self):
         self.__stat = self.path.stat()
@@ -48,7 +56,7 @@ class BufferedIOFile():
     def __str__(self) -> str:
         return str(self.path)
 
-    def __repr__(self) -> str:
+    def __repr__(self) -> str: #pragma: no cover
         return f'BufferedIOBase({self.path}, open: {self.handle is not None}, chunksize: {self.chunksize})'
 
     @contextmanager

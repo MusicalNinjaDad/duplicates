@@ -57,7 +57,7 @@ class DuplicateFiles:
     def _inoindex(self):
         return self.__inoindex
     
-    def refreshinos(self):
+    def refreshinos(self): #pragma: no cover
         #if stale inos are ever going to be an issue this is probably how best to resolve
         raise NotImplementedError
     
@@ -70,7 +70,9 @@ class DuplicateFiles:
                 for filetolink in inotolink:
                     _replacewithlink(filetokeep.path, filetolink.path)
 
-    def printout(self, ignoresamenames: bool = False) -> str:
+    def printout(self, *_, ignoresamenames: bool = False) -> str:
+        if _:
+            raise TypeError(f'BufferedIOFile() takes exactly one non-keyword argument ({len(_) + 1} given)')
         separator = '\n=====================\n'
         def _countuniquenames(setoffiles):
             return len({file.path.name for file in setoffiles})
