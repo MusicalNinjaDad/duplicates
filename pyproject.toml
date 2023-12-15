@@ -46,10 +46,9 @@ dupes = 'duplicates.cli:dupes'
 
 [tool.pytest.ini_options]
 xfail_strict=true
-addopts = '-m "not tox"'
-# # VSCode will not debug tests when --cov
-# # Cannot be automatically disabled. See: https://github.com/microsoft/vscode-python/issues/693
-# addopts = '-m "not tox" --cov=duplicates'
+# addopts = '-m "not tox"'
+
+addopts = '-m "not tox" --cov=duplicates'
 markers = [
     'tox: tests must run in a tox environment'
     ]
