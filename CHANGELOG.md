@@ -1,6 +1,8 @@
 # CHANGELOG - Link Duplicates
 
-- `BufferedIOFile()` expects all arguments _except `path`_ as keyword arguments
+- In general: all arguments with default values are now keyword only (may not apply to anything with a `_` prefix)
+  - `BufferedIOFile()` expects all arguments _except `path`_ as keyword arguments
+  - `DuplicateFiles.printout()`: `ignoresamenames` is now keyword only
 
 ## 0.4.0 - multiple paths
 
