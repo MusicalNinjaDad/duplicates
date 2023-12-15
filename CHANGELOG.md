@@ -1,5 +1,7 @@
 # CHANGELOG - Link Duplicates
 
+- `BufferedIOFile()` expects all arguments _except `path`_ as keyword arguments
+
 ## 0.4.0 - multiple paths
 
 - allow multiple paths to be passed at command line
