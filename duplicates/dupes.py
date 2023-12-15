@@ -57,7 +57,7 @@ class DuplicateFiles:
     def _inoindex(self):
         return self.__inoindex
     
-    def refreshinos(self):
+    def refreshinos(self): #pragma: no cover
         #if stale inos are ever going to be an issue this is probably how best to resolve
         raise NotImplementedError
     
