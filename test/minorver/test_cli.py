@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 import os
 from pytest import mark
+
+from ..majorver.test_output import SEPARATOR
 from ...duplicates import cli 
 from click.testing import CliRunner
 from . import removetimestamp
@@ -126,6 +128,74 @@ def test_nolink(copiedtestfiles):
     ]
 
     assert [removetimestamp(s.strip()) for s in result.output.strip().split('\n')] == output
+
+    newinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
+
+    assert newinos == originalinos
+
+@mark.copyfiles(('fileA',2),('fileB',3))
+def test_list(copiedtestfiles):
+    
+    originalinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
+    
+    clirunner = CliRunner(mix_stderr=False)
+    command = [
+        os.fspath(copiedtestfiles.root),
+        '--list'
+    ]
+
+    result = clirunner.invoke(cli.dupes, command)
+
+    expected_stderr = [
+        f'Initiating search of {copiedtestfiles.root}',
+        f'Found 2 groups of same-sized files, totalling 5 files',
+        f'Identified 0 pre-existing hard links, leaving 5 files for comparison',
+        f'Will now begin comparing file contents, this may take some time',
+        f'Identified 2 sets of duplicate files, totalling 5 files',
+        f'Current usage: 101, future usage: 39, saving: 62'
+    ]
+
+    stderr = [removetimestamp(s.strip()) for s in result.stderr.strip().split('\n')]
+    assert stderr == expected_stderr
+
+    stdout = [s.strip() for s in result.stdout.strip().split('\n')]
+    assert len(stdout) == 6
+    assert all(os.fspath(path.absolute()) in stdout for copies in copiedtestfiles.paths.values() for path in copies)
+    assert SEPARATOR.strip() in stdout
+
+    newinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
+
+    assert newinos == originalinos
+
+@mark.copyfiles(('fileA',2),('fileB',3), ('fileA-copy', 1))
+def test_shortlist(copiedtestfiles):
+    
+    originalinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
+    
+    clirunner = CliRunner(mix_stderr=False)
+    command = [
+        os.fspath(copiedtestfiles.root),
+        '--short'
+    ]
+
+    result = clirunner.invoke(cli.dupes, command)
+
+    expected_stderr = [
+        f'Initiating search of {copiedtestfiles.root}',
+        f'Found 2 groups of same-sized files, totalling 6 files',
+        f'Identified 0 pre-existing hard links, leaving 6 files for comparison',
+        f'Will now begin comparing file contents, this may take some time',
+        f'Identified 2 sets of duplicate files, totalling 6 files',
+        f'Current usage: 117, future usage: 39, saving: 78'
+    ]
+
+    stderr = [removetimestamp(s.strip()) for s in result.stderr.strip().split('\n')]
+    assert stderr == expected_stderr
+
+    stdout = [s.strip() for s in result.stdout.strip().split('\n')]
+    assert len(stdout) == 3
+    assert all(os.fspath(path.absolute()) in stdout for path in copiedtestfiles.paths['fileA'])
+    assert all(os.fspath(path.absolute()) in stdout for path in copiedtestfiles.paths['fileA-copy'])
 
     newinos = {file.stat().st_ino for copies in copiedtestfiles.paths.values() for file in copies}
 

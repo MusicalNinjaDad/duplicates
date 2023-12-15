@@ -66,6 +66,11 @@ def test_equal_pathsresolved(copiedtestfiles):
     assert fileA == symlink
 
 @mark.copyfiles(('fileA',1))
+def test_str(copiedtestfiles):
+    fileA = BufferedIOFile(copiedtestfiles.paths['fileA'][0])
+    assert str(fileA) == os.fspath(copiedtestfiles.paths['fileA'][0].absolute())
+
+@mark.copyfiles(('fileA',1))
 def test_symlink_raiseserror(copiedtestfiles):
     fileA = copiedtestfiles.paths['fileA'][0]
     symlink = copiedtestfiles.root / Path('linktoA.txt')

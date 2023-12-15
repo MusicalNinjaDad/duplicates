@@ -25,7 +25,7 @@ class DuplicateFiles:
         _logger.info(f'Found {len(samesizefiles)} groups of same-sized files, totalling {len(allfiles)} files')
 
         inoindex = _indexbyino(file for samesizeset in samesizefiles for file in samesizeset)
-        uniqueinos = frozenset(next(iter(files)) for files in inoindex.values())
+        uniqueinos = frozenset(_getone(files) for files in inoindex.values())
         _logger.info(f'Identified {len(allfiles)-len(uniqueinos)} pre-existing hard links, leaving {len(uniqueinos)} files for comparison')
         _logger.info(f'Will now begin comparing file contents, this may take some time')
         
@@ -39,7 +39,7 @@ class DuplicateFiles:
                     
         alldupes = {file for fileset in dupes for file in fileset}
         totalsize = sum(file.stat.st_size for file in alldupes)
-        futuresize = sum(next(iter(group)).stat.st_size for group in dupes)
+        futuresize = sum(_getone(group).stat.st_size for group in dupes)
         _logger.info(f'Identified {len(dupes)} sets of duplicate files, totalling {len(alldupes)} files')
         _logger.info(f'Current usage: {totalsize}, future usage: {futuresize}, saving: {totalsize-futuresize}')
 
@@ -63,12 +63,14 @@ class DuplicateFiles:
     
     def link(self) -> None:
         for setoffiles in self.duplicates:
-            fileiterator = iter(setoffiles)
-            filetokeep = next(fileiterator)
-            for mainfiletolink in fileiterator:
-                inotolink = self._inoindex[mainfiletolink.stat.st_ino]
-                for filetolink in inotolink:
-                    _replacewithlink(filetokeep.path, filetolink.path)
+            theseinos = {file.stat.st_ino for file in setoffiles}
+            fileentrycount = {len(self._inoindex[ino]): _getone(self._inoindex[ino]) for ino in theseinos}
+            filetokeep = fileentrycount[max(fileentrycount)]
+            for mainfiletolink in setoffiles:
+                if not mainfiletolink.stat.st_ino == filetokeep.stat.st_ino:
+                    inotolink = self._inoindex[mainfiletolink.stat.st_ino]
+                    for filetolink in inotolink:
+                        _replacewithlink(filetokeep.path, filetolink.path)
 
     def printout(self, *_, ignoresamenames: bool = False) -> str:
         if _:
@@ -163,3 +165,8 @@ def _indexbyino(filestoindex: Iterable[BufferedIOFile]) -> dict[int: set[Buffere
         id = file.stat.st_ino
         uniqueinos[id].add(file)
     return uniqueinos
+
+def _getone(fromset: set):
+    for item in fromset:
+        break
+    return item
