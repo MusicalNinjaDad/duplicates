@@ -45,7 +45,7 @@ class BufferedIOFile():
     def __str__(self) -> str:
         return str(self.path)
 
-    def __repr__(self) -> str:
+    def __repr__(self) -> str: #pragma: no cover
         return f'BufferedIOBase({self.path}, open: {self.handle is not None}, chunksize: {self.chunksize})'
 
     @contextmanager
