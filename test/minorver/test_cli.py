@@ -158,7 +158,7 @@ def test_list(copiedtestfiles):
     stderr = [removetimestamp(s.strip()) for s in result.stderr.strip().split('\n')]
     assert stderr == expected_stderr
 
-    stdout = [removetimestamp(s.strip()) for s in result.stdout.strip().split('\n')]
+    stdout = [s.strip() for s in result.stdout.strip().split('\n')]
     assert len(stdout) == 6
     assert all(os.fspath(path.absolute()) in stdout for copies in copiedtestfiles.paths.values() for path in copies)
     assert SEPARATOR.strip() in stdout
