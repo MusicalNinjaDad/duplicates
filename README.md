@@ -3,6 +3,7 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/link-duplicates)
 ![PyPI - Version](https://img.shields.io/pypi/v/link-duplicates)
 ![Tests](https://github.com/MusicalNinjaRandInt/duplicates/actions/workflows/CI.yaml/badge.svg?branch=main)
+[![codecov](https://codecov.io/gh/MusicalNinjaRandInt/duplicates/graph/badge.svg?token=WGZ7PR5IXC)](https://codecov.io/gh/MusicalNinjaRandInt/duplicates)
 
 Identify duplicate files and replace them with hardlinks on any OS.
 
@@ -35,5 +36,13 @@ and finally ...
 You can also use the class `DuplicateFiles` to indentify and optionally link duplicates.
 
 Additionally `BufferedIOFile` provides a binary file which knows its `Path` and offers a `readchunk()` method similar to the text file `readline()`.
+
+## Up Next
+
+- [Keep original file mode after hardlinking](https://github.com/MusicalNinjaRandInt/duplicates/issues/13)
+- [Select leading inode for linking](https://github.com/MusicalNinjaRandInt/duplicates/issues/14)
+- [Improved exception handling from the command line](https://github.com/MusicalNinjaRandInt/duplicates/issues/15)
+
+Please vote on any issues which are important to you.
 
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/link-duplicates)
