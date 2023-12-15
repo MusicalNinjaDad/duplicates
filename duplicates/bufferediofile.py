@@ -12,7 +12,18 @@ class BufferedIOFile():
     """
     MB = 1024**2
 
-    def __init__(self, path: Path, handle: BufferedIOBase = None, chunksize: int = 100*MB, follow_symlinks=False):
+    def __init__(self, path: Path, *_, handle: BufferedIOBase = None, chunksize: int = 100*MB, follow_symlinks=False):
+        """Argument:
+        - path: A pathlib Path for the file. (Must implement the `resolve()` method)
+        
+        Keyword arguments (all are optional and keyword-only):
+        - handle: an open file handle if present. (default `None`)
+        - chunksize: size of chunk to use for `readchunk()` in bytes. (default: 100MB)
+        - follow-symlinks: whether to treat symlinks as files or follow them (analog `os` functions). (default: False).
+        Will raise a `NotImplementedError` if set to `True`
+        """
+        if _:
+            raise TypeError(f'BufferedIOFile() takes exactly one non-keyword argument ({len(_) + 1} given)')
         if follow_symlinks:
             raise NotImplementedError
         

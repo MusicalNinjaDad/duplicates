@@ -15,7 +15,7 @@ def test_zerosizefile(copiedtestfiles):
 @mark.copyfiles(('fileA',2))
 def test_samefilecontentsfirstchunk(copiedtestfiles, filesopen):
     filestocompare = frozenset(
-        BufferedIOFile(path_handle[0], path_handle[1], chunksize=4) for path_handle in zip(copiedtestfiles.paths['fileA'], copiedtestfiles.handles['fileA'])
+        BufferedIOFile(path_handle[0], handle=path_handle[1], chunksize=4) for path_handle in zip(copiedtestfiles.paths['fileA'], copiedtestfiles.handles['fileA'])
     )
     identicalfiles = _comparefilechunk(filestocompare)
     assert identicalfiles == {filestocompare}
@@ -23,7 +23,7 @@ def test_samefilecontentsfirstchunk(copiedtestfiles, filesopen):
 @mark.copyfiles(('fileA',2))
 def test_samefilecontentsstopsatEOF(copiedtestfiles, filesopen):
     filestocompare = frozenset(
-        BufferedIOFile(path_handle[0], path_handle[1], chunksize=4) for path_handle in zip(copiedtestfiles.paths['fileA'], copiedtestfiles.handles['fileA'])
+        BufferedIOFile(path_handle[0], handle=path_handle[1], chunksize=4) for path_handle in zip(copiedtestfiles.paths['fileA'], copiedtestfiles.handles['fileA'])
     )
     chunkcount = 0
     while True:
